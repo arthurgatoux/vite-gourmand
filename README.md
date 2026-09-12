@@ -1,158 +1,93 @@
-# Vite & Gourmand
+# Vite Gourmand
 
-Application web de commande de menus événementiels pour l'entreprise traiteur bordelaise Vite & Gourmand (Julie et José). Projet réalisé dans le cadre de l'ECF TP Développeur Web et Web Mobile (Studi) par Arthur Gatoux, FastDev.
-
-## Sommaire
-
-- [Présentation](#présentation)
-- [Stack technique](#stack-technique)
-- [Architecture](#architecture)
-- [Prérequis](#prérequis)
-- [Installation locale](#installation-locale)
-- [Base de données relationnelle (Supabase / PostgreSQL)](#base-de-données-relationnelle-supabase--postgresql)
-- [Base de données NoSQL (MongoDB Atlas)](#base-de-données-nosql-mongodb-atlas)
-- [Lancer le projet en local](#lancer-le-projet-en-local)
-- [Structure du dépôt](#structure-du-dépôt)
-- [Workflow Git](#workflow-git)
-- [Rôles et parcours de test](#rôles-et-parcours-de-test)
-- [Documentation et gestion de projet](#documentation-et-gestion-de-projet)
-- [Déploiement](#déploiement)
-
-## Présentation
-
-L'application permet de présenter les menus événementiels de l'entreprise, de les commander en ligne, avec un calcul dynamique du prix, des réductions et des frais de livraison, et propose quatre espaces distincts : visiteur, utilisateur, employé et administrateur. Un dashboard statistique (nombre de commandes par menu, chiffre d'affaires) est alimenté par une base NoSQL dédiée.
+Application web de commande de menus événementiels pour Vite Gourmand, entreprise traiteur bordelaise
+(Julie et José). Projet réalisé dans le cadre de l'ECF TP Développeur Web et Web Mobile (Studi).
 
 ## Stack technique
 
-| Composant | Technologie | Justification résumée |
-|---|---|---|
-| Front et back-end | Next.js 15 (App Router, TypeScript, Tailwind CSS) | Un seul framework full-stack, Server Actions natives, rendu hybride SSR/CSR adapté au filtrage dynamique exigé par le CDC |
-| Base relationnelle | Supabase (PostgreSQL managé, région `eu-west-1`) | SQL standard (exigence explicite du CDC concernant les fichiers SQL de création et d'intégration), Row Level Security native, hébergement en zone UE pour le RGPD |
-| Authentification | Supabase Auth | Gestion sécurisée du hachage de mot de passe, tokens de confirmation et de réinitialisation par mail, intégration native avec RLS |
-| Base NoSQL | MongoDB Atlas | Exigée par le CDC pour le dashboard admin (nombre de commandes par menu, chiffre d'affaires) |
-| Déploiement | Vercel | Intégration continue avec GitHub, adapté à Next.js |
-| Gestion de projet | Notion | Backlog (50 user stories réparties en épics E1 à E10) et documentation |
-| Versioning | GitHub (dépôt public `vite-gourmand`) | Exigence du CDC : dépôt public, workflow `main`, `develop` et `feature/*` |
-
-## Architecture
-
-```
-Navigateur
-   │
-   ▼
-Next.js (Vercel) : Server Actions et Route Handlers
-   │                          │
-   ▼                          ▼
-Supabase Auth          Supabase PostgreSQL (RLS)
-   │                          │
-   └──────────► Synchronisation applicative ─────► MongoDB Atlas (statistiques agrégées)
-```
-
-La synchronisation vers MongoDB est déclenchée applicativement (Server Action) à chaque changement de statut de commande vers « terminée », plutôt que recalculée à la volée sur PostgreSQL (voir `docs/MCD-ViteGourmand.md`, section 3).
+- **Front + back** : Next.js (App Router, TypeScript, Tailwind CSS)
+- **Base relationnelle** : Supabase (PostgreSQL) + Supabase Auth, projet `vite-gourmand`, région `eu-west-1`
+- **Base NoSQL** : MongoDB Atlas, cluster `vite-gourmand`, base `vite_gourmand_stats` (statistiques admin : nb commandes/menu, CA)
+- **Déploiement** : Vercel
+- **Gestion de projet** : Notion
 
 ## Prérequis
 
-- Node.js version 20 ou supérieure
-- npm (ou pnpm, ou yarn)
-- Un compte Supabase avec accès au projet `vite-gourmand`
-- Un cluster MongoDB Atlas (base `vite-gourmand-stats`)
-- Git
+- Node.js 18 ou supérieur
+- npm
+- Un compte Supabase (projet déjà créé pour ce dépôt)
+- Un compte MongoDB Atlas (cluster déjà créé pour ce dépôt)
 
 ## Installation locale
 
-```bash
-# 1. Cloner le dépôt
-git clone https://github.com/arthurgatoux/vite-gourmand.git
-cd vite-gourmand
+1. Cloner le dépôt :
+   ```bash
+   git clone https://github.com/arthurgatoux/vite-gourmand.git
+   cd vite-gourmand
+   ```
 
-# 2. Se placer sur la branche develop (branche d'intégration)
-git checkout develop
+2. Installer les dépendances :
+   ```bash
+   npm install
+   ```
 
-# 3. Installer les dépendances
-npm install
+3. Configurer les variables d'environnement : copier `.env.example` vers `.env.local` et renseigner les valeurs
+   (voir section suivante).
 
-# 4. Configurer les variables d'environnement
-cp .env.example .env.local
-```
+4. Lancer le serveur de développement :
+   ```bash
+   npm run dev
+   ```
+   L'application est accessible sur [http://localhost:3000](http://localhost:3000).
 
-Renseigner dans `.env.local` :
+## Variables d'environnement
 
-```env
-NEXT_PUBLIC_SUPABASE_URL=<url du projet Supabase>
-NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=<clé publishable ou anon>
-SUPABASE_SECRET_KEY=<clé secrète Supabase, usage serveur uniquement, jamais exposée au client>
-MONGODB_URI=<chaîne de connexion MongoDB Atlas>
-MONGODB_DB_NAME=vite-gourmand-stats
-```
-
-Les clés Supabase sont disponibles dans « Project Settings > API » du dashboard Supabase du projet `vite-gourmand`.
-
-## Base de données relationnelle (Supabase / PostgreSQL)
-
-Le schéma complet et les données de test sont fournis en SQL brut, conformément à l'exigence explicite du CDC selon laquelle les fichiers de création et d'intégration de données doivent être des fichiers SQL :
+Créer un fichier `.env.local` à la racine (non versionné, cf. `.gitignore`) avec :
 
 ```bash
-supabase/sql/001_create_schema.sql   # 14 tables, 4 enums, contraintes, index, activation RLS
-supabase/sql/002_seed_data.sql       # jeu de données de test (menus, plats, allergènes, régimes)
+# Supabase (PostgreSQL relationnel + Auth)
+NEXT_PUBLIC_SUPABASE_URL=https://<votre-projet>.supabase.co
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=<votre-cle-publishable>
+
+# MongoDB Atlas (NoSQL, statistiques admin)
+MONGODB_URI=mongodb+srv://<utilisateur>:<mot-de-passe>@vite-gourmand.h1xxlex.mongodb.net/vite_gourmand_stats?appName=vite-gourmand
 ```
 
-Pour appliquer ces scripts sur votre propre instance Supabase, via l'éditeur SQL du dashboard, ou via la CLI Supabase :
+Les clés Supabase sont disponibles dans **Project Settings → API** du tableau de bord Supabase. La chaîne de
+connexion MongoDB est disponible via **Connect → Drivers** sur le cluster Atlas.
 
-```bash
-supabase db execute --file supabase/sql/001_create_schema.sql
-supabase db execute --file supabase/sql/002_seed_data.sql
-```
+## Base de données relationnelle (PostgreSQL / Supabase)
 
-Le modèle conceptuel de données (MCD), le diagramme Mermaid et les règles de gestion (RG1 à RG7) sont documentés dans [`docs/MCD-ViteGourmand.md`](./docs/MCD-ViteGourmand.md).
+Scripts SQL disponibles dans `supabase/sql/` :
 
-Les comptes utilisateurs (`auth.users` combiné à `public.profils`) sont créés via le flux Supabase Auth, lors de l'inscription applicative, jamais par insertion SQL directe.
+- `001_create_schema.sql` : création du schéma (14 tables, 4 types énumérés, Row Level Security activée)
+- `002_seed_data.sql` : intégration des données de test (catalogue de menus, plats, régimes, allergènes)
+
+Modèle conceptuel de données détaillé : `docs/MCD-ViteGourmand.md`.
 
 ## Base de données NoSQL (MongoDB Atlas)
 
-Collection `stats_menus`, alimentée par synchronisation applicative à chaque commande terminée. Structure documentée dans `docs/MCD-ViteGourmand.md`, section 3.
+Script d'initialisation de la collection `stats_menus` (validation, index, documents initiaux) :
+`mongodb/init/001_create_stats_menus.js`. Structure détaillée et stratégie de synchronisation :
+`docs/NoSQL-MongoDB-ViteGourmand.md`.
 
-## Lancer le projet en local
+## Documentation complémentaire
 
-```bash
-npm run dev
-```
-
-L'application est accessible à l'adresse http://localhost:3000.
-
-## Structure du dépôt
-
-```
-app/                  Routes Next.js (App Router)
-components/            Composants React réutilisables (UI et métier)
-docs/                  Documentation technique (MCD, etc.)
-lib/                   Clients Supabase (browser et server), utilitaires
-supabase/sql/          Scripts SQL de création et de seed
-```
+- `docs/Analyse-Besoins-ViteGourmand.md` — analyse des besoins et reformulation du CDC
+- `docs/Charte-Graphique-ViteGourmand.md` — charte graphique (palette, typographies)
+- `docs/MCD-ViteGourmand.md` — modèle conceptuel de données relationnel
+- `docs/NoSQL-MongoDB-ViteGourmand.md` — structure de la base NoSQL
+- `docs/Diagrammes-Utilisation-ViteGourmand.md` — cas d'utilisation par rôle
+- `docs/Diagrammes-Sequence-ViteGourmand.md` — parcours critiques
+- `docs/RGPD-ViteGourmand.md` — conformité RGPD
 
 ## Workflow Git
 
-Conformément au CDC, le dépôt applique le workflow suivant :
+- `main` : branche de production, stable et déployée.
+- `develop` : branche d'intégration, chaque fonctionnalité y est fusionnée après tests.
+- `feature/*` : une branche par fonctionnalité, créée depuis `develop`, fusionnée dans `develop` après revue.
 
-- `main` : branche de production, stable, déployée.
-- `develop` : branche d'intégration, testée avant chaque merge vers `main`.
-- `feature/*` : une branche par fonctionnalité, créée depuis `develop`. Après tests, merge vers `develop`. Une fois `develop` validée, merge vers `main`.
+## Rôles applicatifs
 
-```bash
-git checkout develop
-git checkout -b feature/nom-de-la-fonctionnalite
-# développement de la fonctionnalité
-git push origin feature/nom-de-la-fonctionnalite
-# Pull Request vers develop, puis merge après tests
-```
-
-## Rôles et parcours de test
-
-Les identifiants de test par rôle (visiteur, utilisateur, employé, administrateur) seront fournis dans le manuel d'utilisation en PDF livré en fin de projet.
-
-## Documentation et gestion de projet
-
-La gestion de projet et la documentation technique complète (choix technologiques, MCD, diagrammes de classes, cas d'usage, séquence, déploiement) sont centralisées dans l'espace Notion du projet.
-
-## Déploiement
-
-Déploiement cible : Vercel, connecté au dépôt GitHub sur la branche `main`. La procédure détaillée sera documentée dans `docs/` lors de la phase de déploiement.
+Visiteur (non authentifié), Utilisateur, Employé, Administrateur. Le rôle Administrateur n'est jamais
+attribuable depuis l'application : sa création est exclusivement manuelle (cf. `docs/MCD-ViteGourmand.md`, RG1).
