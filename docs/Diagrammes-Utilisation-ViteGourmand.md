@@ -79,4 +79,3 @@ flowchart LR
 | — | Un employé ne peut annuler une commande acceptée sans avoir contacté le client au préalable (motif obligatoire) | CDC p.8 |
 | RG6 | Un avis n'est visible sur l'accueil qu'après validation par un employé | CDC p.7 |
 
-Ces diagrammes serviront de base aux diagrammes de séquence des parcours critiques (étape suivante de la Todo Global).
