@@ -13,7 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import {
   validerConnexion,
@@ -32,6 +32,7 @@ export function LoginForm({
   const [erreurGlobale, setErreurGlobale] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,7 +53,16 @@ export function LoginForm({
         password: motDePasse,
       });
       if (error) throw error;
-      router.push("/protected");
+
+      // Respecte la destination d'origine (ex : /commande?menu=... quand un
+      // visiteur non authentifie tentait de commander), sinon retour a
+      // l'accueil. Seules les URLs internes (commencant par /) sont suivies,
+      // pour eviter une redirection ouverte vers un site externe.
+      const destination = searchParams.get("redirect");
+      const cible =
+        destination && destination.startsWith("/") ? destination : "/";
+      router.push(cible);
+      router.refresh();
     } catch {
       // Message volontairement generique : ne jamais reveler si l'email
       // existe ou non (bonne pratique de securite / enumeration de comptes).
