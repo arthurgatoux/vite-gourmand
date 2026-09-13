@@ -56,3 +56,53 @@ export async function getCommandesEmploye(): Promise<CommandeEmploye[]> {
     dateCreation: cmd.date_creation,
   }))
 }
+
+export interface AvisEmploye {
+  id: string
+  note: number
+  commentaire: string | null
+  nomClient: string
+  prenomClient: string
+  menuTitre: string
+  dateCreation: string
+}
+
+/**
+ * Recupere les avis en attente de moderation pour l'espace employe/admin.
+ * Protege par la policy RLS `employe_admin_lisent_tous_avis` (clause est_employe_ou_admin()).
+ */
+export async function getAvisEnAttente(): Promise<AvisEmploye[]> {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('avis')
+    .select(`
+      id,
+      note,
+      commentaire,
+      date_creation,
+      commandes (
+        nom_client,
+        prenom_client,
+        menus (
+          titre
+        )
+      )
+    `)
+    .eq('statut_validation', 'en_attente')
+    .order('date_creation', { ascending: true })
+
+  if (error || !data) {
+    console.error('Erreur lors de la récupération des avis (employé):', error?.message)
+    return []
+  }
+
+  return data.map(a => ({
+    id: a.id,
+    note: a.note,
+    commentaire: a.commentaire,
+    nomClient: a.commandes.nom_client,
+    prenomClient: a.commandes.prenom_client,
+    menuTitre: a.commandes.menus.titre,
+    dateCreation: a.date_creation,
+  }))
+}
