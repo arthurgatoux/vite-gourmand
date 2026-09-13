@@ -1,14 +1,11 @@
 import Link from "next/link";
-
-const HORAIRES = [
-  { jour: "Lundi - Vendredi", plage: "9h - 19h" },
-  { jour: "Samedi", plage: "9h - 18h" },
-  { jour: "Dimanche", plage: "Sur rendez-vous" },
-];
+import { getHorairesPublics } from "@/lib/supabase/horaires-queries";
 
 const RESEAUX = ["Instagram", "Facebook", "Pinterest"];
 
-export function Footer() {
+export async function Footer() {
+  const horaires = await getHorairesPublics();
+
   return (
     <footer className="w-full bg-foreground text-background">
       <div className="mx-auto grid max-w-6xl gap-10 px-6 py-16 lg:grid-cols-4 lg:px-11">
@@ -22,9 +19,9 @@ export function Footer() {
         <div>
           <h2 className="text-sm font-bold uppercase tracking-wide text-accent">Horaires</h2>
           <dl className="mt-3 space-y-2 text-sm text-background/90">
-            {HORAIRES.map((h) => (
-              <div key={h.jour} className="flex justify-between gap-4">
-                <dt>{h.jour}</dt>
+            {horaires.map((h) => (
+              <div key={h.id} className="flex justify-between gap-4">
+                <dt>{h.jourLibelle}</dt>
                 <dd>{h.plage}</dd>
               </div>
             ))}
