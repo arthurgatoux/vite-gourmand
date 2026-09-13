@@ -2,6 +2,7 @@ import { notFound, redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { getCommandeDetail } from '@/lib/supabase/mon-compte-queries'
 import { CommandeDetailView } from '@/components/mon-compte/commande-detail-view'
+import { ModifierAnnulerCommande } from '@/components/mon-compte/modifier-annuler-commande'
 import Link from 'next/link'
 
 type PageProps = {
@@ -42,6 +43,7 @@ export default async function CommandeDetailPage({ params }: PageProps) {
       </nav>
 
       <CommandeDetailView commande={commande} />
+      <ModifierAnnulerCommande commande={commande} />
     </main>
   )
 }

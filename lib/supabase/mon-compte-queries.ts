@@ -24,6 +24,8 @@ export interface CommandeDetail extends CommandeHistorique {
   prixLivraison: number
   reductionPourcentage: number
   materielPrete: boolean
+  prixBaseMenu: number
+  nbPersonnesMinMenu: number
   historique: Array<{
     id: string
     statut: StatutCommande
@@ -107,7 +109,9 @@ export async function getCommandeDetail(
       date_creation,
       menus (
         titre,
-        theme
+        theme,
+        prix_base,
+        nb_personnes_min
       )
     `)
     .eq('id', commandeId)
@@ -149,6 +153,8 @@ export async function getCommandeDetail(
     prixLivraison: Number(commande.prix_livraison),
     reductionPourcentage: Number(commande.reduction_pourcentage),
     materielPrete: commande.materiel_prete,
+    prixBaseMenu: Number(commande.menus.prix_base),
+    nbPersonnesMinMenu: commande.menus.nb_personnes_min,
     historique: (historique ?? []).map(h => ({
       id: h.id,
       statut: h.statut,
