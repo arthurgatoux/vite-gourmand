@@ -30,7 +30,7 @@ export default async function MonComptePage() {
           Bonjour {profil?.prenom ?? ''}
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
-          Retrouvez ici vos commandes et, prochainement, vos informations personnelles.
+          Retrouvez ici vos commandes et vos informations personnelles.
         </p>
       </div>
 
@@ -41,10 +41,24 @@ export default async function MonComptePage() {
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
             <p className="text-sm text-muted-foreground">
-              Consultez l'historique et le suivi de vos commandes de menus evenementiels.
+              Consultez l'historique et le suivi de vos commandes de menus événementiels.
             </p>
             <Button asChild className="w-full">
               <Link href="/mon-compte/commandes">Voir mes commandes</Link>
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Card className="shadow-card">
+          <CardHeader>
+            <CardTitle className="text-lg font-heading">Mes informations</CardTitle>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-4">
+            <p className="text-sm text-muted-foreground">
+              Modifiez votre nom, prénom, téléphone et adresse postale.
+            </p>
+            <Button asChild variant="outline" className="w-full">
+              <Link href="/mon-compte/profil">Modifier mes informations</Link>
             </Button>
           </CardContent>
         </Card>
