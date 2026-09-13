@@ -3,7 +3,8 @@
 import { useState, useTransition } from "react"
 import { Button } from "@/components/ui/button"
 import { LABEL_STATUT, type StatutCommande } from "@/lib/supabase/statuts-commande"
-import { changerStatutCommande, getProchainsStatuts } from "@/lib/supabase/employe-actions"
+import { getProchainsStatuts } from "@/lib/supabase/statuts-transitions"
+import { changerStatutCommande } from "@/lib/supabase/employe-actions"
 
 interface ChangerStatutSelectProps {
   commandeId: string
