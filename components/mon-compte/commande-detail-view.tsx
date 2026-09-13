@@ -113,10 +113,10 @@ export function CommandeDetailView({ commande }: CommandeDetailViewProps) {
           </CardHeader>
           <CardContent>
             <ol className="relative border-l border-border pl-4">
-              {commande.historique.map((étape, index) => (
+              {commande.historique.map((étape) => (
                 <li key={étape.id} className="mb-6 ml-2">
                   <div className="flex items-center gap-2">
-                    <StatutBadge statut={étape.statut as any} />
+                    <StatutBadge statut={étape.statut} />
                     <span className="text-xs text-muted-foreground">
                       {format(new Date(étape.dateChangement), 'dd/MM/yyyy HH:mm', { locale: fr })}
                     </span>

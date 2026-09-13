@@ -1,4 +1,5 @@
-import createClient from './server'
+import { createClient } from './server'
+import type { StatutCommande } from './statuts-commande'
 
 export interface CommandeHistorique {
   id: string
@@ -8,7 +9,7 @@ export interface CommandeHistorique {
   heureLivraison: string
   nbPersonnes: number
   prixTotal: number
-  statutCourant: 'en_attente' | 'accepte' | 'en_preparation' | 'en_livraison' | 'livre' | 'attente_retour_materiel' | 'termine' | 'annule'
+  statutCourant: StatutCommande
   dateCreation: string
 }
 
@@ -25,7 +26,7 @@ export interface CommandeDetail extends CommandeHistorique {
   materielPrete: boolean
   historique: Array<{
     id: string
-    statut: string
+    statut: StatutCommande
     dateChangement: string
     motifAnnulation: string | null
     modeContactClient: string | null
