@@ -41,8 +41,8 @@ export default async function AdminPage() {
               Nombre de commandes par menu, chiffre d&apos;affaires et comparatif graphique, alimentes par la
               base NoSQL dediee.
             </p>
-            <Button asChild size="sm" variant="secondary" disabled>
-              <span>Voir les statistiques (a venir)</span>
+            <Button asChild size="sm" variant="secondary">
+              <Link href="/admin/dashboard">Voir les statistiques</Link>
             </Button>
           </CardContent>
         </Card>
