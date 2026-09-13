@@ -15,20 +15,12 @@ import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
-import {
-  validerConnexion,
-  type ChampConnexion,
-} from "@/lib/validations/auth";
+import { validerConnexion, type ChampConnexion } from "@/lib/validations/auth";
 
-export function LoginForm({
-  className,
-  ...props
-}: React.ComponentPropsWithoutRef<"div">) {
+export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRef<"div">) {
   const [email, setEmail] = useState("");
   const [motDePasse, setMotDePasse] = useState("");
-  const [erreursChamps, setErreursChamps] = useState<
-    Partial<Record<ChampConnexion, string>>
-  >({});
+  const [erreursChamps, setErreursChamps] = useState<Partial<Record<ChampConnexion, string>>>({});
   const [erreurGlobale, setErreurGlobale] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
@@ -40,32 +32,25 @@ export function LoginForm({
 
     const erreurs = validerConnexion({ email, motDePasse });
     setErreursChamps(erreurs);
-    if (Object.keys(erreurs).length > 0) {
-      return;
-    }
+    if (Object.keys(erreurs).length > 0) return;
 
     const supabase = createClient();
     setIsLoading(true);
-
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password: motDePasse,
-      });
+      const { error } = await supabase.auth.signInWithPassword({ email, password: motDePasse });
       if (error) throw error;
 
-      // Respecte la destination d'origine (ex : /commande?menu=... quand un
-      // visiteur non authentifie tentait de commander), sinon retour a
-      // l'accueil. Seules les URLs internes (commencant par /) sont suivies,
+      // Respecte la destination d'origine (ex: /commande?menu=...) quand un
+      // visiteur non authentifie tentait de commander, sinon retour a
+      // l'accueil. Seules les URLs internes commencant par "/" sont suivies,
       // pour eviter une redirection ouverte vers un site externe.
       const destination = searchParams.get("redirect");
-      const cible =
-        destination && destination.startsWith("/") ? destination : "/";
+      const cible = destination && destination.startsWith("/") ? destination : "/";
       router.push(cible);
       router.refresh();
     } catch {
       // Message volontairement generique : ne jamais reveler si l'email
-      // existe ou non (bonne pratique de securite / enumeration de comptes).
+      // existe ou non (bonne pratique de securite, enumeration de comptes).
       setErreurGlobale("Email ou mot de passe incorrect.");
     } finally {
       setIsLoading(false);
@@ -77,9 +62,7 @@ export function LoginForm({
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl">Connexion</CardTitle>
-          <CardDescription>
-            Accedez a votre espace Vite Gourmand
-          </CardDescription>
+          <CardDescription>Accedez a votre espace Vite Gourmand</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleLogin} noValidate>
@@ -93,11 +76,14 @@ export function LoginForm({
                   placeholder="m@example.com"
                   required
                   aria-invalid={Boolean(erreursChamps.email)}
+                  aria-describedby={erreursChamps.email ? "email-erreur" : undefined}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
                 {erreursChamps.email && (
-                  <p className="text-sm text-red-500">{erreursChamps.email}</p>
+                  <p id="email-erreur" className="text-sm text-red-500">
+                    {erreursChamps.email}
+                  </p>
                 )}
               </div>
               <div className="grid gap-2">
@@ -116,11 +102,14 @@ export function LoginForm({
                   autoComplete="current-password"
                   required
                   aria-invalid={Boolean(erreursChamps.motDePasse)}
+                  aria-describedby={erreursChamps.motDePasse ? "motdepasse-erreur" : undefined}
                   value={motDePasse}
                   onChange={(e) => setMotDePasse(e.target.value)}
                 />
                 {erreursChamps.motDePasse && (
-                  <p className="text-sm text-red-500">{erreursChamps.motDePasse}</p>
+                  <p id="motdepasse-erreur" className="text-sm text-red-500">
+                    {erreursChamps.motDePasse}
+                  </p>
                 )}
               </div>
               {erreurGlobale && (

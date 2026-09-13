@@ -7,15 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  validerCommande,
-  calculerApercuPrix,
-  type ChampCommande,
-} from "@/lib/validations/commande";
-import type {
-  MenuPourCommande,
-  ProfilPourCommande,
-} from "@/lib/supabase/commande-queries";
+import { validerCommande, calculerApercuPrix, type ChampCommande } from "@/lib/validations/commande";
+import type { MenuPourCommande, ProfilPourCommande } from "@/lib/supabase/commande-queries";
 
 type CommandeFormProps = {
   menu: MenuPourCommande;
@@ -24,7 +17,6 @@ type CommandeFormProps = {
 
 export function CommandeForm({ menu, profil }: CommandeFormProps) {
   const router = useRouter();
-
   const [nomClient, setNomClient] = useState(profil?.nom ?? "");
   const [prenomClient, setPrenomClient] = useState(profil?.prenom ?? "");
   const [emailClient, setEmailClient] = useState(profil?.email ?? "");
@@ -35,23 +27,13 @@ export function CommandeForm({ menu, profil }: CommandeFormProps) {
   const [nbPersonnes, setNbPersonnes] = useState(menu.nbPersonnesMin);
   const [estABordeaux, setEstABordeaux] = useState(true);
   const [distanceKm, setDistanceKm] = useState(0);
-
-  const [erreursChamps, setErreursChamps] = useState<
-    Partial<Record<ChampCommande, string>>
-  >({});
+  const [erreursChamps, setErreursChamps] = useState<Partial<Record<ChampCommande, string>>>({});
   const [erreurGlobale, setErreurGlobale] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const apercu = useMemo(
-    () =>
-      calculerApercuPrix(
-        menu.prixBase,
-        nbPersonnes,
-        menu.nbPersonnesMin,
-        estABordeaux,
-        distanceKm
-      ),
-    [menu.prixBase, menu.nbPersonnesMin, nbPersonnes, estABordeaux, distanceKm]
+    () => calculerApercuPrix(menu.prixBase, nbPersonnes, menu.nbPersonnesMin, estABordeaux, distanceKm),
+    [menu.prixBase, menu.nbPersonnesMin, nbPersonnes, estABordeaux, distanceKm],
   );
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -59,28 +41,18 @@ export function CommandeForm({ menu, profil }: CommandeFormProps) {
     setErreurGlobale(null);
 
     const erreurs = validerCommande(
-      {
-        adressePrestation,
-        dateprestation,
-        heureLivraison,
-        nbPersonnes,
-        estABordeaux,
-        distanceKm,
-      },
-      menu.nbPersonnesMin
+      { adressePrestation, dateprestation, heureLivraison, nbPersonnes, estABordeaux, distanceKm },
+      menu.nbPersonnesMin,
     );
     setErreursChamps(erreurs);
-    if (Object.keys(erreurs).length > 0) {
-      return;
-    }
+    if (Object.keys(erreurs).length > 0) return;
 
     const supabase = createClient();
     setIsLoading(true);
-
     try {
-      // Le prix affiche ci-dessus est un apercu ; le montant qui fait foi est
-      // recalcule par le trigger Supabase calculer_prix_commande (jamais
-      // confiance au client pour un montant a facturer).
+      // Le prix affiche ci-dessus est un apercu : le montant qui fait foi
+      // est recalcule par le trigger Supabase calculer_prix_commande.
+      // Jamais confiance au client pour un montant a facturer.
       const { data, error } = await supabase
         .from("commandes")
         .insert({
@@ -101,11 +73,7 @@ export function CommandeForm({ menu, profil }: CommandeFormProps) {
       if (error) throw error;
       router.push(`/commande/succes?id=${data.id}`);
     } catch (error: unknown) {
-      setErreurGlobale(
-        error instanceof Error
-          ? error.message
-          : "Une erreur est survenue lors de la commande."
-      );
+      setErreurGlobale(error instanceof Error ? error.message : "Une erreur est survenue lors de la commande.");
     } finally {
       setIsLoading(false);
     }
@@ -121,12 +89,7 @@ export function CommandeForm({ menu, profil }: CommandeFormProps) {
         <legend className="mb-2 font-heading text-xl">Vos coordonnees</legend>
         <div className="grid gap-2">
           <Label htmlFor="nomClient">Nom</Label>
-          <Input
-            id="nomClient"
-            required
-            value={nomClient}
-            onChange={(e) => setNomClient(e.target.value)}
-          />
+          <Input id="nomClient" required value={nomClient} onChange={(e) => setNomClient(e.target.value)} />
         </div>
         <div className="grid gap-2">
           <Label htmlFor="prenomClient">Prenom</Label>
@@ -167,11 +130,12 @@ export function CommandeForm({ menu, profil }: CommandeFormProps) {
             id="adressePrestation"
             required
             aria-invalid={Boolean(erreursChamps.adressePrestation)}
+            aria-describedby={erreursChamps.adressePrestation ? "adressePrestation-erreur" : undefined}
             value={adressePrestation}
             onChange={(e) => setAdressePrestation(e.target.value)}
           />
           {erreursChamps.adressePrestation && (
-            <p className="text-sm text-red-500">
+            <p id="adressePrestation-erreur" className="text-sm text-red-500">
               {erreursChamps.adressePrestation}
             </p>
           )}
@@ -183,11 +147,14 @@ export function CommandeForm({ menu, profil }: CommandeFormProps) {
             type="date"
             required
             aria-invalid={Boolean(erreursChamps.dateprestation)}
+            aria-describedby={erreursChamps.dateprestation ? "dateprestation-erreur" : undefined}
             value={dateprestation}
             onChange={(e) => setDateprestation(e.target.value)}
           />
           {erreursChamps.dateprestation && (
-            <p className="text-sm text-red-500">{erreursChamps.dateprestation}</p>
+            <p id="dateprestation-erreur" className="text-sm text-red-500">
+              {erreursChamps.dateprestation}
+            </p>
           )}
         </div>
         <div className="grid gap-2">
@@ -197,11 +164,14 @@ export function CommandeForm({ menu, profil }: CommandeFormProps) {
             type="time"
             required
             aria-invalid={Boolean(erreursChamps.heureLivraison)}
+            aria-describedby={erreursChamps.heureLivraison ? "heureLivraison-erreur" : undefined}
             value={heureLivraison}
             onChange={(e) => setHeureLivraison(e.target.value)}
           />
           {erreursChamps.heureLivraison && (
-            <p className="text-sm text-red-500">{erreursChamps.heureLivraison}</p>
+            <p id="heureLivraison-erreur" className="text-sm text-red-500">
+              {erreursChamps.heureLivraison}
+            </p>
           )}
         </div>
         <div className="grid gap-2">
@@ -212,15 +182,18 @@ export function CommandeForm({ menu, profil }: CommandeFormProps) {
             min={menu.nbPersonnesMin}
             required
             aria-invalid={Boolean(erreursChamps.nbPersonnes)}
+            aria-describedby={cn("nbPersonnes-aide", erreursChamps.nbPersonnes && "nbPersonnes-erreur")}
             value={nbPersonnes}
             onChange={(e) => setNbPersonnes(Number(e.target.value))}
           />
-          <p className="text-xs text-muted-foreground">
-            Minimum {menu.nbPersonnesMin} personnes pour ce menu. A partir de{" "}
-            {menu.nbPersonnesMin + 5} personnes, une reduction de 10% s&apos;applique.
+          <p id="nbPersonnes-aide" className="text-xs text-muted-foreground">
+            Minimum {menu.nbPersonnesMin} personnes pour ce menu. A partir de {menu.nbPersonnesMin + 5} personnes,
+            une reduction de 10% s&apos;applique.
           </p>
           {erreursChamps.nbPersonnes && (
-            <p className="text-sm text-red-500">{erreursChamps.nbPersonnes}</p>
+            <p id="nbPersonnes-erreur" className="text-sm text-red-500">
+              {erreursChamps.nbPersonnes}
+            </p>
           )}
         </div>
         <div className="grid gap-2">
@@ -232,9 +205,7 @@ export function CommandeForm({ menu, profil }: CommandeFormProps) {
             className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-base shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
           >
             <option value="bordeaux">A Bordeaux (5,00 EUR de livraison)</option>
-            <option value="hors-bordeaux">
-              Hors Bordeaux (5,00 EUR + 0,59 EUR/km)
-            </option>
+            <option value="hors-bordeaux">Hors Bordeaux (5,00 EUR + 0,59 EUR/km)</option>
           </select>
           {!estABordeaux && (
             <div className="mt-2 grid gap-2">
@@ -244,30 +215,26 @@ export function CommandeForm({ menu, profil }: CommandeFormProps) {
                 type="number"
                 min={1}
                 aria-invalid={Boolean(erreursChamps.distanceKm)}
+                aria-describedby={erreursChamps.distanceKm ? "distanceKm-erreur" : undefined}
                 value={distanceKm}
                 onChange={(e) => setDistanceKm(Number(e.target.value))}
               />
               {erreursChamps.distanceKm && (
-                <p className="text-sm text-red-500">{erreursChamps.distanceKm}</p>
+                <p id="distanceKm-erreur" className="text-sm text-red-500">
+                  {erreursChamps.distanceKm}
+                </p>
               )}
             </div>
           )}
         </div>
       </fieldset>
 
-      <div
-        className="rounded-xl border-2 border-accent bg-secondary p-6"
-        aria-live="polite"
-      >
+      <div className="rounded-xl border-2 border-accent bg-secondary p-6" aria-live="polite">
         <h2 className="font-heading text-xl">Detail du prix (apercu)</h2>
         <dl className="mt-4 flex flex-col gap-2 text-sm">
           <div className="flex justify-between">
             <dt>
-              Menu ({nbPersonnes} pers.
-              {apercu.reductionPourcentage > 0
-                ? `, reduction ${apercu.reductionPourcentage}%`
-                : ""}
-              )
+              Menu ({nbPersonnes} pers.{apercu.reductionPourcentage > 0 ? `, -${apercu.reductionPourcentage}% reduction` : ""})
             </dt>
             <dd className="font-bold">{apercu.prixMenu.toFixed(2)} EUR</dd>
           </div>
@@ -277,14 +244,11 @@ export function CommandeForm({ menu, profil }: CommandeFormProps) {
           </div>
           <div className="mt-2 flex justify-between border-t border-border pt-2 text-lg">
             <dt className="font-bold">Total</dt>
-            <dd className="font-heading text-primary">
-              {apercu.prixTotal.toFixed(2)} EUR
-            </dd>
+            <dd className="font-heading text-primary">{apercu.prixTotal.toFixed(2)} EUR</dd>
           </div>
         </dl>
         <p className="mt-3 text-xs text-muted-foreground">
-          Ce montant est un apercu ; le montant definitif est confirme par email
-          apres validation de la commande.
+          Ce montant est un apercu : le montant definitif est confirme par email apres validation de la commande.
         </p>
       </div>
 
