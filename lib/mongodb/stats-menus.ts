@@ -1,3 +1,4 @@
+import { Int32 } from "mongodb";
 import { getMongoClient } from "./client";
 
 interface SynchroniserStatsMenuParams {
@@ -22,6 +23,13 @@ interface SynchroniserStatsMenuParams {
  *   cas d'echec Mongo, on logue sans jamais bloquer la commande cote
  *   client. La donnee metier Postgres prime toujours sur la donnee
  *   statistique Mongo (point de vigilance documente dans le dossier RGPD).
+ *
+ * Note technique : le validateur Atlas de stats_menus est strict et exige
+ * bsonType "int" pour nb_commandes_total et historique_mensuel.nb_commandes
+ * (cf. mongodb/init/001_create_stats_menus.js). Le driver Node serialise un
+ * nombre JS ordinaire en double par defaut : les increments sur ces deux
+ * champs sont donc explicitement types en Int32 pour rester conformes au
+ * schema, sinon la commande $inc echoue avec "Document failed validation".
  */
 export async function synchroniserStatsMenu({
   menuId,
@@ -40,9 +48,9 @@ export async function synchroniserStatsMenu({
       { menu_id: menuId, "historique_mensuel.mois": moisCourant },
       {
         $inc: {
-          nb_commandes_total: 1,
+          nb_commandes_total: new Int32(1),
           chiffre_affaires_total: prixTotal,
-          "historique_mensuel.$.nb_commandes": 1,
+          "historique_mensuel.$.nb_commandes": new Int32(1),
           "historique_mensuel.$.chiffre_affaires": prixTotal,
         },
         $set: { derniere_maj: new Date() },
@@ -54,9 +62,13 @@ export async function synchroniserStatsMenu({
         { menu_id: menuId },
         {
           $setOnInsert: { menu_id: menuId, titre_menu: titreMenu, theme },
-          $inc: { nb_commandes_total: 1, chiffre_affaires_total: prixTotal },
+          $inc: { nb_commandes_total: new Int32(1), chiffre_affaires_total: prixTotal },
           $push: {
-            historique_mensuel: { mois: moisCourant, nb_commandes: 1, chiffre_affaires: prixTotal },
+            historique_mensuel: {
+              mois: moisCourant,
+              nb_commandes: new Int32(1),
+              chiffre_affaires: prixTotal,
+            },
           },
           $set: { derniere_maj: new Date() },
         },
