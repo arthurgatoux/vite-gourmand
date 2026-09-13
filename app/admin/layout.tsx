@@ -1,12 +1,16 @@
-import { redirect } from 'next/navigation'
-import { getCurrentProfile } from '@/lib/supabase/get-current-profile'
+import { redirect } from "next/navigation";
+import { getCurrentProfile } from "@/lib/supabase/get-current-profile";
 
-export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  const profil = await getCurrentProfile()
+export default async function AdminLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const profil = await getCurrentProfile();
 
-  if (!profil || profil.role !== 'administrateur') {
-    redirect('/auth/login?redirect=/admin')
+  if (!profil || profil.role !== "administrateur" || !profil.compte_actif) {
+    redirect("/auth/login?redirect=admin");
   }
 
-  return <>{children}</>
+  return <>{children}</>;
 }
