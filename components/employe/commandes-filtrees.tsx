@@ -7,6 +7,7 @@ import { StatutBadge } from '@/components/mon-compte/statut-badge'
 import { LABEL_STATUT, type StatutCommande } from '@/lib/supabase/statuts-commande'
 import { type CommandeEmploye } from '@/lib/supabase/employe-queries'
 import { ChangerStatutSelect } from '@/components/employe/changer-statut-select'
+import { RetourMateriel } from '@/components/employe/retour-materiel'
 import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
 
@@ -101,6 +102,7 @@ export function CommandesFiltrees({ commandes }: CommandesFiltreesProps) {
                     </div>
                   </dl>
                   <ChangerStatutSelect commandeId={cmd.id} statutActuel={cmd.statutCourant} />
+                  {cmd.pretMateriel && <RetourMateriel pret={cmd.pretMateriel} />}
                 </CardContent>
               </Card>
             </li>
