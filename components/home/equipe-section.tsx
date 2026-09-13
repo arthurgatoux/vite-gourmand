@@ -1,33 +1,44 @@
-export function EquipeSection() {
-  const engagements = [
-    {
-      titre: "La qualite des produits",
-      description:
-        "Des ingredients frais, locaux et rigoureusement selectionnes au fil des saisons.",
-    },
-    {
-      titre: "L'experience evenementielle",
-      description:
-        "25 ans de maitrise, du diner intime aux receptions de grande ampleur.",
-    },
-    {
-      titre: "Le sur-mesure",
-      description:
-        "Un menu, une scenographie et un service penses pour votre histoire.",
-    },
-  ];
+import { Wheat, GlassWater, PenLine } from "lucide-react";
 
+const ENGAGEMENTS = [
+  {
+    icon: Wheat,
+    titre: "La qualite des produits",
+    description:
+      "Des ingredients frais, locaux et rigoureusement selectionnes au fil des saisons.",
+  },
+  {
+    icon: GlassWater,
+    titre: "L'experience evenementielle",
+    description:
+      "25 ans de maitrise, du diner intime aux receptions de grande ampleur.",
+  },
+  {
+    icon: PenLine,
+    titre: "Le sur-mesure",
+    description:
+      "Un menu, une scenographie et un service penses pour votre histoire.",
+  },
+];
+
+export function EquipeSection() {
   return (
-    <section aria-labelledby="equipe-heading" className="w-full bg-secondary py-20">
-      <div className="mx-auto max-w-5xl px-5">
-        <div className="mx-auto max-w-2xl text-center">
-          <p className="text-sm font-semibold uppercase tracking-wide text-primary">
+    <section aria-labelledby="equipe-heading" className="w-full bg-background py-24">
+      <div className="mx-auto grid max-w-6xl gap-16 px-6 lg:grid-cols-2 lg:items-center">
+        <div
+          className="aspect-[4/3] w-full rounded-3xl bg-gradient-to-br from-primary to-accent"
+          role="img"
+          aria-label="Julie et Jose, fondateurs de Vite et Gourmand"
+        />
+
+        <div>
+          <p className="text-sm font-bold uppercase tracking-widest text-primary">
             Une histoire de goût
           </p>
-          <h2 id="equipe-heading" className="mt-2 text-3xl font-heading">
+          <h2 id="equipe-heading" className="mt-3 font-heading text-4xl lg:text-5xl">
             Julie &amp; Jose, une passion partagee depuis 25 ans
           </h2>
-          <p className="mt-4 text-muted-foreground">
+          <p className="mt-4 text-base leading-relaxed text-muted-foreground">
             A Bordeaux, notre maison imagine des receptions qui ressemblent a
             celles et ceux qui les celebrent. Julie orchestre chaque detail,
             Jose compose une cuisine sincere, inspiree des saisons et de notre
@@ -37,12 +48,26 @@ export function EquipeSection() {
             &laquo; Recevoir, c&apos;est creer un souvenir autour d&apos;une table. &raquo;
           </p>
         </div>
+      </div>
 
-        <ul className="mt-14 grid gap-8 sm:grid-cols-3">
-          {engagements.map((item) => (
-            <li key={item.titre} className="text-center">
-              <h3 className="font-heading text-lg text-primary">{item.titre}</h3>
-              <p className="mt-2 text-sm text-muted-foreground">{item.description}</p>
+      <div className="mx-auto mt-20 max-w-6xl px-6">
+        <p className="text-center text-sm font-bold uppercase tracking-widest text-primary">
+          Notre engagement
+        </p>
+        <h2 className="mt-3 text-center font-heading text-4xl">
+          L&apos;exigence dans chaque detail
+        </h2>
+        <ul className="mt-12 grid gap-6 sm:grid-cols-3">
+          {ENGAGEMENTS.map((item) => (
+            <li
+              key={item.titre}
+              className="flex flex-col items-center gap-4 rounded-2xl border border-border bg-secondary p-8 text-center shadow-card"
+            >
+              <span className="flex h-14 w-14 items-center justify-center rounded-full bg-accent text-foreground">
+                <item.icon aria-hidden="true" className="h-6 w-6" />
+              </span>
+              <h3 className="font-heading text-xl">{item.titre}</h3>
+              <p className="text-sm text-muted-foreground">{item.description}</p>
             </li>
           ))}
         </ul>
