@@ -1,8 +1,7 @@
-import Link from 'next/link'
 import { getCommandesEmploye, getAvisEnAttente } from '@/lib/supabase/employe-queries'
 import { CommandesFiltrees } from '@/components/employe/commandes-filtrees'
 import { AvisAValider } from '@/components/employe/avis-a-valider'
-import { Button } from '@/components/ui/button'
+import { EmployeNav } from '@/components/employe/employe-nav'
 
 export const metadata = {
   title: 'Espace employé - Vite Gourmand',
@@ -21,9 +20,7 @@ export default async function EmployePage() {
           </p>
           <h1 className="mt-3 font-heading text-4xl lg:text-5xl">Gestion des commandes</h1>
         </div>
-        <Button asChild variant="outline" size="sm">
-          <Link href="/employe/menus">Gérer les menus</Link>
-        </Button>
+        <EmployeNav />
       </div>
 
       <CommandesFiltrees commandes={commandes} />
