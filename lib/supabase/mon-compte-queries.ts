@@ -13,6 +13,13 @@ export interface CommandeHistorique {
   dateCreation: string
 }
 
+export interface AvisExistant {
+  id: string
+  note: number
+  commentaire: string | null
+  statutValidation: 'en_attente' | 'valide' | 'refuse'
+}
+
 export interface CommandeDetail extends CommandeHistorique {
   nomClient: string
   prenomClient: string
@@ -26,6 +33,7 @@ export interface CommandeDetail extends CommandeHistorique {
   materielPrete: boolean
   prixBaseMenu: number
   nbPersonnesMinMenu: number
+  avis: AvisExistant | null
   historique: Array<{
     id: string
     statut: StatutCommande
@@ -78,8 +86,9 @@ export async function getCommandesUtilisateur(userId: string): Promise<CommandeH
 }
 
 /**
- * Récupère le détail complet d'une commande avec son historique de statuts.
- * Vérifie que la commande appartient bien au userId (RLS + vérification applicative).
+ * Récupère le détail complet d'une commande avec son historique de statuts et l'avis
+ * eventuellement déposé. Vérifie que la commande appartient bien au userId (RLS +
+ * vérification applicative).
  */
 export async function getCommandeDetail(
   commandeId: string,
@@ -133,6 +142,12 @@ export async function getCommandeDetail(
     console.error('Erreur lors de la récupération de l\'historique:', erreurHist?.message)
   }
 
+  const { data: avis } = await supabase
+    .from('avis')
+    .select('id, note, commentaire, statut_validation')
+    .eq('commande_id', commandeId)
+    .maybeSingle()
+
   return {
     id: commande.id,
     menuTitre: commande.menus.titre,
@@ -155,6 +170,14 @@ export async function getCommandeDetail(
     materielPrete: commande.materiel_prete,
     prixBaseMenu: Number(commande.menus.prix_base),
     nbPersonnesMinMenu: commande.menus.nb_personnes_min,
+    avis: avis
+      ? {
+          id: avis.id,
+          note: avis.note,
+          commentaire: avis.commentaire,
+          statutValidation: avis.statut_validation,
+        }
+      : null,
     historique: (historique ?? []).map(h => ({
       id: h.id,
       statut: h.statut,

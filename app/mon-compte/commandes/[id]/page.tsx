@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { getCommandeDetail } from '@/lib/supabase/mon-compte-queries'
 import { CommandeDetailView } from '@/components/mon-compte/commande-detail-view'
 import { ModifierAnnulerCommande } from '@/components/mon-compte/modifier-annuler-commande'
+import { DeposerAvis } from '@/components/mon-compte/deposer-avis'
 import Link from 'next/link'
 
 type PageProps = {
@@ -44,6 +45,9 @@ export default async function CommandeDetailPage({ params }: PageProps) {
 
       <CommandeDetailView commande={commande} />
       <ModifierAnnulerCommande commande={commande} />
+      {commande.statutCourant === 'termine' && (
+        <DeposerAvis commandeId={commande.id} avisExistant={commande.avis} />
+      )}
     </main>
   )
 }
