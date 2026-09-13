@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import { ThemeProvider } from "next-themes";
+import { Header } from "@/components/layout/header";
+import { Footer } from "@/components/layout/footer";
+import { Suspense } from "react";
 import "./globals.css";
 
 const defaultUrl = process.env.VERCEL_URL
@@ -35,7 +38,7 @@ export default function RootLayout({
   return (
     <html lang="fr" suppressHydrationWarning>
       <body
-        className={`${inter.variable} ${playfairDisplay.variable} font-sans antialiased`}
+        className={`${inter.variable} ${playfairDisplay.variable} flex min-h-screen flex-col font-sans antialiased`}
       >
         <ThemeProvider
           attribute="class"
@@ -43,7 +46,19 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <a
+            href="#contenu-principal"
+            className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:m-2 focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground"
+          >
+            Aller au contenu principal
+          </a>
+          <Suspense fallback={null}>
+            <Header />
+          </Suspense>
+          <div id="contenu-principal" className="flex flex-1 flex-col">
+            {children}
+          </div>
+          <Footer />
         </ThemeProvider>
       </body>
     </html>
