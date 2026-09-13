@@ -14,14 +14,17 @@ export default function Page() {
           <Card>
             <CardHeader>
               <CardTitle className="text-2xl">
-                Thank you for signing up!
+                Merci pour votre inscription !
               </CardTitle>
-              <CardDescription>Check your email to confirm</CardDescription>
+              <CardDescription>
+                Verifiez votre boite mail pour confirmer votre compte
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground">
-                You&apos;ve successfully signed up. Please check your email to
-                confirm your account before signing in.
+                Votre compte a bien ete cree avec le role utilisateur. Verifiez
+                votre boite mail et cliquez sur le lien de confirmation avant
+                de vous connecter.
               </p>
             </CardContent>
           </Card>
