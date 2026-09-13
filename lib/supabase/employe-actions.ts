@@ -100,3 +100,37 @@ export async function annulerCommandeEmploye(
 
   return { success: true }
 }
+
+export type ValiderAvisResult =
+  | { success: true }
+  | { success: false; error: string }
+
+// Ticket E6 : Validation ou refus des avis clients.
+// CDC : un avis n'est visible sur la page d'accueil que si statut_validation
+// passe a "valide" (RG6, deja documente dans MCD-ViteGourmand.md).
+export async function validerAvis(
+  avisId: string,
+  decision: "valide" | "refuse"
+): Promise<ValiderAvisResult> {
+  const profil = await getCurrentProfile()
+
+  if (!profil || (profil.role !== "employe" && profil.role !== "administrateur")) {
+    return { success: false, error: "Action reservee aux employes et administrateurs." }
+  }
+
+  const supabase = await createClient()
+
+  const { error } = await supabase
+    .from("avis")
+    .update({ statut_validation: decision })
+    .eq("id", avisId)
+
+  if (error) {
+    return { success: false, error: "Erreur lors de la mise a jour de l'avis : " + error.message }
+  }
+
+  revalidatePath("/employe")
+  revalidatePath("/")
+
+  return { success: true }
+}

@@ -1,5 +1,6 @@
-import { getCommandesEmploye } from '@/lib/supabase/employe-queries'
+import { getCommandesEmploye, getAvisEnAttente } from '@/lib/supabase/employe-queries'
 import { CommandesFiltrees } from '@/components/employe/commandes-filtrees'
+import { AvisAValider } from '@/components/employe/avis-a-valider'
 
 export const metadata = {
   title: 'Espace employé - Vite Gourmand',
@@ -7,7 +8,7 @@ export const metadata = {
 }
 
 export default async function EmployePage() {
-  const commandes = await getCommandesEmploye()
+  const [commandes, avis] = await Promise.all([getCommandesEmploye(), getAvisEnAttente()])
 
   return (
     <>
@@ -19,6 +20,16 @@ export default async function EmployePage() {
       </div>
 
       <CommandesFiltrees commandes={commandes} />
+
+      <div className="mt-16">
+        <h2 className="font-heading text-2xl lg:text-3xl">Avis clients à valider</h2>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Un avis validé devient visible sur la page d'accueil.
+        </p>
+        <div className="mt-6">
+          <AvisAValider avis={avis} />
+        </div>
+      </div>
     </>
   )
 }
