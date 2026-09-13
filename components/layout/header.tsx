@@ -14,7 +14,7 @@ const NAV_LINKS = [
 function espaceLink(role: "utilisateur" | "employe" | "administrateur") {
   if (role === "administrateur") return { href: "/admin", label: "Espace administrateur" };
   if (role === "employe") return { href: "/employe", label: "Espace employe" };
-  return { href: "/compte", label: "Mon espace" };
+  return { href: "/mon-compte", label: "Mon espace" };
 }
 
 export async function Header() {
@@ -32,7 +32,6 @@ export async function Header() {
             Traiteur bordelais
           </span>
         </Link>
-
         <nav aria-label="Navigation principale">
           <ul className="hidden items-center gap-8 text-base sm:flex">
             {NAV_LINKS.map((link, index) => (
@@ -50,15 +49,12 @@ export async function Header() {
             ))}
           </ul>
         </nav>
-
         <div className="flex items-center gap-3">
           <ThemeSwitcher />
           {profil ? (
             <>
               <Button asChild size="sm" variant="secondary">
-                <Link href={espaceLink(profil.role).href}>
-                  {espaceLink(profil.role).label}
-                </Link>
+                <Link href={espaceLink(profil.role).href}>{espaceLink(profil.role).label}</Link>
               </Button>
               <LogoutButton />
             </>
@@ -67,7 +63,12 @@ export async function Header() {
               <Button asChild size="sm" variant="secondary">
                 <Link href="/auth/login">Connexion</Link>
               </Button>
-              <Button asChild size="sm" variant="outline" className="border-primary-foreground/40 bg-transparent text-primary-foreground hover:bg-primary-foreground/10">
+              <Button
+                asChild
+                size="sm"
+                variant="outline"
+                className="border-primary-foreground/40 bg-transparent text-primary-foreground hover:bg-primary-foreground/10"
+              >
                 <Link href="/auth/sign-up">Creer un compte</Link>
               </Button>
             </>
