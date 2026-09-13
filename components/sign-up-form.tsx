@@ -15,15 +15,9 @@ import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import {
-  validerInscription,
-  type ChampInscription,
-} from "@/lib/validations/auth";
+import { validerInscription, type ChampInscription } from "@/lib/validations/auth";
 
-export function SignUpForm({
-  className,
-  ...props
-}: React.ComponentPropsWithoutRef<"div">) {
+export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutRef<"div">) {
   const [nom, setNom] = useState("");
   const [prenom, setPrenom] = useState("");
   const [email, setEmail] = useState("");
@@ -31,9 +25,7 @@ export function SignUpForm({
   const [adressePostale, setAdressePostale] = useState("");
   const [motDePasse, setMotDePasse] = useState("");
   const [confirmationMotDePasse, setConfirmationMotDePasse] = useState("");
-  const [erreursChamps, setErreursChamps] = useState<
-    Partial<Record<ChampInscription, string>>
-  >({});
+  const [erreursChamps, setErreursChamps] = useState<Partial<Record<ChampInscription, string>>>({});
   const [erreurGlobale, setErreurGlobale] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
@@ -52,36 +44,26 @@ export function SignUpForm({
       confirmationMotDePasse,
     });
     setErreursChamps(erreurs);
-    if (Object.keys(erreurs).length > 0) {
-      return;
-    }
+    if (Object.keys(erreurs).length > 0) return;
 
     const supabase = createClient();
     setIsLoading(true);
-
     try {
       // A la creation du compte, le role est impose cote base de donnees
-      // (trigger handle_new_user, valeur par defaut 'utilisateur') : aucune
+      // (trigger handle_new_user), valeur par defaut "utilisateur" : aucune
       // metadonnee envoyee ici ne peut fixer un autre role.
       const { error } = await supabase.auth.signUp({
         email,
         password: motDePasse,
         options: {
           emailRedirectTo: `${window.location.origin}/protected`,
-          data: {
-            nom,
-            prenom,
-            telephone,
-            adresse_postale: adressePostale,
-          },
+          data: { nom, prenom, telephone, adresse_postale: adressePostale },
         },
       });
       if (error) throw error;
       router.push("/auth/sign-up-success");
     } catch (error: unknown) {
-      setErreurGlobale(
-        error instanceof Error ? error.message : "Une erreur est survenue."
-      );
+      setErreurGlobale(error instanceof Error ? error.message : "Une erreur est survenue.");
     } finally {
       setIsLoading(false);
     }
@@ -92,9 +74,7 @@ export function SignUpForm({
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl">Creer un compte</CardTitle>
-          <CardDescription>
-            Renseignez vos informations pour commander vos menus evenementiels
-          </CardDescription>
+          <CardDescription>Renseignez vos informations pour commander vos menus evenementiels</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSignUp} noValidate>
@@ -108,11 +88,14 @@ export function SignUpForm({
                     autoComplete="family-name"
                     required
                     aria-invalid={Boolean(erreursChamps.nom)}
+                    aria-describedby={erreursChamps.nom ? "nom-erreur" : undefined}
                     value={nom}
                     onChange={(e) => setNom(e.target.value)}
                   />
                   {erreursChamps.nom && (
-                    <p className="text-sm text-red-500">{erreursChamps.nom}</p>
+                    <p id="nom-erreur" className="text-sm text-red-500">
+                      {erreursChamps.nom}
+                    </p>
                   )}
                 </div>
                 <div className="grid gap-2">
@@ -123,15 +106,17 @@ export function SignUpForm({
                     autoComplete="given-name"
                     required
                     aria-invalid={Boolean(erreursChamps.prenom)}
+                    aria-describedby={erreursChamps.prenom ? "prenom-erreur" : undefined}
                     value={prenom}
                     onChange={(e) => setPrenom(e.target.value)}
                   />
                   {erreursChamps.prenom && (
-                    <p className="text-sm text-red-500">{erreursChamps.prenom}</p>
+                    <p id="prenom-erreur" className="text-sm text-red-500">
+                      {erreursChamps.prenom}
+                    </p>
                   )}
                 </div>
               </div>
-
               <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
@@ -141,14 +126,16 @@ export function SignUpForm({
                   placeholder="m@example.com"
                   required
                   aria-invalid={Boolean(erreursChamps.email)}
+                  aria-describedby={erreursChamps.email ? "email-erreur" : undefined}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
                 {erreursChamps.email && (
-                  <p className="text-sm text-red-500">{erreursChamps.email}</p>
+                  <p id="email-erreur" className="text-sm text-red-500">
+                    {erreursChamps.email}
+                  </p>
                 )}
               </div>
-
               <div className="grid gap-2">
                 <Label htmlFor="telephone">Numero de GSM</Label>
                 <Input
@@ -158,14 +145,16 @@ export function SignUpForm({
                   placeholder="06 12 34 56 78"
                   required
                   aria-invalid={Boolean(erreursChamps.telephone)}
+                  aria-describedby={erreursChamps.telephone ? "telephone-erreur" : undefined}
                   value={telephone}
                   onChange={(e) => setTelephone(e.target.value)}
                 />
                 {erreursChamps.telephone && (
-                  <p className="text-sm text-red-500">{erreursChamps.telephone}</p>
+                  <p id="telephone-erreur" className="text-sm text-red-500">
+                    {erreursChamps.telephone}
+                  </p>
                 )}
               </div>
-
               <div className="grid gap-2">
                 <Label htmlFor="adressePostale">Adresse postale</Label>
                 <Input
@@ -175,16 +164,16 @@ export function SignUpForm({
                   placeholder="12 rue des Fetes, 33000 Bordeaux"
                   required
                   aria-invalid={Boolean(erreursChamps.adressePostale)}
+                  aria-describedby={erreursChamps.adressePostale ? "adressePostale-erreur" : undefined}
                   value={adressePostale}
                   onChange={(e) => setAdressePostale(e.target.value)}
                 />
                 {erreursChamps.adressePostale && (
-                  <p className="text-sm text-red-500">
+                  <p id="adressePostale-erreur" className="text-sm text-red-500">
                     {erreursChamps.adressePostale}
                   </p>
                 )}
               </div>
-
               <div className="grid gap-2">
                 <Label htmlFor="motDePasse">Mot de passe</Label>
                 <Input
@@ -193,46 +182,44 @@ export function SignUpForm({
                   autoComplete="new-password"
                   required
                   aria-invalid={Boolean(erreursChamps.motDePasse)}
-                  aria-describedby="mot-de-passe-aide"
+                  aria-describedby={cn("mot-de-passe-aide", erreursChamps.motDePasse && "motdepasse-erreur")}
                   value={motDePasse}
                   onChange={(e) => setMotDePasse(e.target.value)}
                 />
-                {erreursChamps.motDePasse ? (
-                  <p className="text-sm text-red-500">{erreursChamps.motDePasse}</p>
-                ) : (
-                  <p id="mot-de-passe-aide" className="text-xs text-muted-foreground">
-                    10 caracteres minimum, avec une majuscule, une minuscule, un
-                    chiffre et un caractere special.
+                {erreursChamps.motDePasse && (
+                  <p id="motdepasse-erreur" className="text-sm text-red-500">
+                    {erreursChamps.motDePasse}
                   </p>
                 )}
+                <p id="mot-de-passe-aide" className="text-xs text-muted-foreground">
+                  10 caracteres minimum, avec une majuscule, une minuscule, un chiffre et un caractere special.
+                </p>
               </div>
-
               <div className="grid gap-2">
-                <Label htmlFor="confirmationMotDePasse">
-                  Confirmer le mot de passe
-                </Label>
+                <Label htmlFor="confirmationMotDePasse">Confirmer le mot de passe</Label>
                 <Input
                   id="confirmationMotDePasse"
                   type="password"
                   autoComplete="new-password"
                   required
                   aria-invalid={Boolean(erreursChamps.confirmationMotDePasse)}
+                  aria-describedby={
+                    erreursChamps.confirmationMotDePasse ? "confirmation-mdp-erreur" : undefined
+                  }
                   value={confirmationMotDePasse}
                   onChange={(e) => setConfirmationMotDePasse(e.target.value)}
                 />
                 {erreursChamps.confirmationMotDePasse && (
-                  <p className="text-sm text-red-500">
+                  <p id="confirmation-mdp-erreur" className="text-sm text-red-500">
                     {erreursChamps.confirmationMotDePasse}
                   </p>
                 )}
               </div>
-
               {erreurGlobale && (
                 <p className="text-sm text-red-500" role="alert">
                   {erreurGlobale}
                 </p>
               )}
-
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? "Creation du compte..." : "Creer mon compte"}
               </Button>

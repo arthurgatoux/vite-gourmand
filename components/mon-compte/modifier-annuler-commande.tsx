@@ -1,35 +1,35 @@
-'use client'
+"use client";
 
-import { useMemo, useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   validerCommande,
   calculerApercuPrix,
   type ChampCommande,
   type DonneesCommande,
-} from '@/lib/validations/commande'
-import { type CommandeDetail } from '@/lib/supabase/mon-compte-queries'
+} from "@/lib/validations/commande";
+import type { CommandeDetail } from "@/lib/supabase/mon-compte-queries";
 
 interface ModifierAnnulerCommandeProps {
-  commande: CommandeDetail
+  commande: CommandeDetail;
 }
 
 export function ModifierAnnulerCommande({ commande }: ModifierAnnulerCommandeProps) {
-  const router = useRouter()
-  const [mode, setMode] = useState<'lecture' | 'modification'>('lecture')
-  const [adressePrestation, setAdressePrestation] = useState(commande.adressePrestation)
-  const [dateprestation, setDateprestation] = useState(commande.datePrestation)
-  const [heureLivraison, setHeureLivraison] = useState(commande.heureLivraison)
-  const [nbPersonnes, setNbPersonnes] = useState(commande.nbPersonnes)
-  const [estABordeaux, setEstABordeaux] = useState(!commande.distanceKm)
-  const [distanceKm, setDistanceKm] = useState(commande.distanceKm ?? 0)
-  const [erreursChamps, setErreursChamps] = useState<Partial<Record<ChampCommande, string>>>({})
-  const [erreurGlobale, setErreurGlobale] = useState<string | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter();
+  const [mode, setMode] = useState<"lecture" | "modification">("lecture");
+  const [adressePrestation, setAdressePrestation] = useState(commande.adressePrestation);
+  const [dateprestation, setDateprestation] = useState(commande.datePrestation);
+  const [heureLivraison, setHeureLivraison] = useState(commande.heureLivraison);
+  const [nbPersonnes, setNbPersonnes] = useState(commande.nbPersonnes);
+  const [estABordeaux, setEstABordeaux] = useState(!commande.distanceKm);
+  const [distanceKm, setDistanceKm] = useState(commande.distanceKm ?? 0);
+  const [erreursChamps, setErreursChamps] = useState<Partial<Record<ChampCommande, string>>>({});
+  const [erreurGlobale, setErreurGlobale] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const apercu = useMemo(
     () =>
@@ -38,18 +38,16 @@ export function ModifierAnnulerCommande({ commande }: ModifierAnnulerCommandePro
         nbPersonnes,
         commande.nbPersonnesMinMenu,
         estABordeaux,
-        distanceKm
+        distanceKm,
       ),
-    [commande.prixBaseMenu, commande.nbPersonnesMinMenu, nbPersonnes, estABordeaux, distanceKm]
-  )
+    [commande.prixBaseMenu, commande.nbPersonnesMinMenu, nbPersonnes, estABordeaux, distanceKm],
+  );
 
-  if (commande.statutCourant !== 'en_attente') {
-    return null
-  }
+  if (commande.statutCourant !== "en_attente") return null;
 
   async function handleModifier(e: React.FormEvent) {
-    e.preventDefault()
-    setErreurGlobale(null)
+    e.preventDefault();
+    setErreurGlobale(null);
 
     const donnees: DonneesCommande = {
       adressePrestation,
@@ -58,19 +56,19 @@ export function ModifierAnnulerCommande({ commande }: ModifierAnnulerCommandePro
       nbPersonnes,
       estABordeaux,
       distanceKm,
-    }
-    const erreurs = validerCommande(donnees, commande.nbPersonnesMinMenu)
-    setErreursChamps(erreurs)
-    if (Object.keys(erreurs).length > 0) return
+    };
+    const erreurs = validerCommande(donnees, commande.nbPersonnesMinMenu);
+    setErreursChamps(erreurs);
+    if (Object.keys(erreurs).length > 0) return;
 
-    const supabase = createClient()
-    setIsLoading(true)
+    const supabase = createClient();
+    setIsLoading(true);
     try {
-      // CDC : tout est modifiable sauf le choix du menu (verrouille aussi par un
-      // trigger Supabase, empecher_changement_menu_commande). Le prix definitif
-      // est recalcule cote serveur (trigger calculer_prix_commande).
+      // CDC : tout est modifiable sauf le choix du menu (verrouille aussi par
+      // un trigger Supabase, empecher_changement_menu_commande). Le prix
+      // definitif est recalcule cote serveur (trigger calculer_prix_commande).
       const { error } = await supabase
-        .from('commandes')
+        .from("commandes")
         .update({
           adresse_prestation: adressePrestation,
           date_prestation: dateprestation,
@@ -78,50 +76,40 @@ export function ModifierAnnulerCommande({ commande }: ModifierAnnulerCommandePro
           nb_personnes: nbPersonnes,
           distance_km: estABordeaux ? 0 : distanceKm,
         })
-        .eq('id', commande.id)
+        .eq("id", commande.id);
 
-      if (error) throw error
-      setMode('lecture')
-      router.refresh()
+      if (error) throw error;
+      setMode("lecture");
+      router.refresh();
     } catch (error: unknown) {
-      setErreurGlobale(
-        error instanceof Error ? error.message : 'Une erreur est survenue lors de la modification.'
-      )
+      setErreurGlobale(error instanceof Error ? error.message : "Une erreur est survenue lors de la modification.");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
   }
 
   async function handleAnnuler() {
-    const confirme = window.confirm(
-      "Confirmez-vous l'annulation de cette commande ? Cette action est irreversible."
-    )
-    if (!confirme) return
+    const confirme = window.confirm("Confirmez-vous l'annulation de cette commande ? Cette action est irreversible.");
+    if (!confirme) return;
 
-    const supabase = createClient()
-    setIsLoading(true)
-    setErreurGlobale(null)
+    const supabase = createClient();
+    setIsLoading(true);
+    setErreurGlobale(null);
     try {
-      const { error } = await supabase
-        .from('commandes')
-        .update({ statut_courant: 'annule' })
-        .eq('id', commande.id)
-
-      if (error) throw error
-      router.refresh()
+      const { error } = await supabase.from("commandes").update({ statut_courant: "annule" }).eq("id", commande.id);
+      if (error) throw error;
+      router.refresh();
     } catch (error: unknown) {
-      setErreurGlobale(
-        error instanceof Error ? error.message : "Une erreur est survenue lors de l'annulation."
-      )
+      setErreurGlobale(error instanceof Error ? error.message : "Une erreur est survenue lors de l'annulation.");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
   }
 
-  if (mode === 'lecture') {
+  if (mode === "lecture") {
     return (
       <div className="mt-6 flex flex-wrap items-start gap-3">
-        <Button variant="outline" onClick={() => setMode('modification')} disabled={isLoading}>
+        <Button variant="outline" onClick={() => setMode("modification")} disabled={isLoading}>
           Modifier ma commande
         </Button>
         <Button variant="destructive" onClick={handleAnnuler} disabled={isLoading}>
@@ -133,7 +121,7 @@ export function ModifierAnnulerCommande({ commande }: ModifierAnnulerCommandePro
           </p>
         )}
       </div>
-    )
+    );
   }
 
   return (
@@ -150,11 +138,14 @@ export function ModifierAnnulerCommande({ commande }: ModifierAnnulerCommandePro
             id="adressePrestation"
             required
             aria-invalid={Boolean(erreursChamps.adressePrestation)}
+            aria-describedby={erreursChamps.adressePrestation ? "adressePrestation-erreur" : undefined}
             value={adressePrestation}
-            onChange={e => setAdressePrestation(e.target.value)}
+            onChange={(e) => setAdressePrestation(e.target.value)}
           />
           {erreursChamps.adressePrestation && (
-            <p className="text-sm text-red-500">{erreursChamps.adressePrestation}</p>
+            <p id="adressePrestation-erreur" className="text-sm text-red-500">
+              {erreursChamps.adressePrestation}
+            </p>
           )}
         </div>
         <div className="grid gap-2">
@@ -164,25 +155,31 @@ export function ModifierAnnulerCommande({ commande }: ModifierAnnulerCommandePro
             type="date"
             required
             aria-invalid={Boolean(erreursChamps.dateprestation)}
+            aria-describedby={erreursChamps.dateprestation ? "dateprestation-erreur" : undefined}
             value={dateprestation}
-            onChange={e => setDateprestation(e.target.value)}
+            onChange={(e) => setDateprestation(e.target.value)}
           />
           {erreursChamps.dateprestation && (
-            <p className="text-sm text-red-500">{erreursChamps.dateprestation}</p>
+            <p id="dateprestation-erreur" className="text-sm text-red-500">
+              {erreursChamps.dateprestation}
+            </p>
           )}
         </div>
         <div className="grid gap-2">
-          <Label htmlFor="heureLivraison">Heure de livraison souhaitée</Label>
+          <Label htmlFor="heureLivraison">Heure de livraison souhaitee</Label>
           <Input
             id="heureLivraison"
             type="time"
             required
             aria-invalid={Boolean(erreursChamps.heureLivraison)}
+            aria-describedby={erreursChamps.heureLivraison ? "heureLivraison-erreur" : undefined}
             value={heureLivraison}
-            onChange={e => setHeureLivraison(e.target.value)}
+            onChange={(e) => setHeureLivraison(e.target.value)}
           />
           {erreursChamps.heureLivraison && (
-            <p className="text-sm text-red-500">{erreursChamps.heureLivraison}</p>
+            <p id="heureLivraison-erreur" className="text-sm text-red-500">
+              {erreursChamps.heureLivraison}
+            </p>
           )}
         </div>
         <div className="grid gap-2">
@@ -193,22 +190,25 @@ export function ModifierAnnulerCommande({ commande }: ModifierAnnulerCommandePro
             min={commande.nbPersonnesMinMenu}
             required
             aria-invalid={Boolean(erreursChamps.nbPersonnes)}
+            aria-describedby="nbPersonnes-aide nbPersonnes-erreur"
             value={nbPersonnes}
-            onChange={e => setNbPersonnes(Number(e.target.value))}
+            onChange={(e) => setNbPersonnes(Number(e.target.value))}
           />
-          <p className="text-xs text-muted-foreground">
+          <p id="nbPersonnes-aide" className="text-xs text-muted-foreground">
             Minimum {commande.nbPersonnesMinMenu} personnes pour ce menu.
           </p>
           {erreursChamps.nbPersonnes && (
-            <p className="text-sm text-red-500">{erreursChamps.nbPersonnes}</p>
+            <p id="nbPersonnes-erreur" className="text-sm text-red-500">
+              {erreursChamps.nbPersonnes}
+            </p>
           )}
         </div>
         <div className="grid gap-2">
           <Label htmlFor="estABordeaux">Lieu de livraison</Label>
           <select
             id="estABordeaux"
-            value={estABordeaux ? 'bordeaux' : 'hors-bordeaux'}
-            onChange={e => setEstABordeaux(e.target.value === 'bordeaux')}
+            value={estABordeaux ? "bordeaux" : "hors-bordeaux"}
+            onChange={(e) => setEstABordeaux(e.target.value === "bordeaux")}
             className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-base shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
           >
             <option value="bordeaux">A Bordeaux (5,00 EUR de livraison)</option>
@@ -222,11 +222,14 @@ export function ModifierAnnulerCommande({ commande }: ModifierAnnulerCommandePro
                 type="number"
                 min={1}
                 aria-invalid={Boolean(erreursChamps.distanceKm)}
+                aria-describedby={erreursChamps.distanceKm ? "distanceKm-erreur" : undefined}
                 value={distanceKm}
-                onChange={e => setDistanceKm(Number(e.target.value))}
+                onChange={(e) => setDistanceKm(Number(e.target.value))}
               />
               {erreursChamps.distanceKm && (
-                <p className="text-sm text-red-500">{erreursChamps.distanceKm}</p>
+                <p id="distanceKm-erreur" className="text-sm text-red-500">
+                  {erreursChamps.distanceKm}
+                </p>
               )}
             </div>
           )}
@@ -234,12 +237,11 @@ export function ModifierAnnulerCommande({ commande }: ModifierAnnulerCommandePro
       </fieldset>
 
       <div className="rounded-xl border-2 border-accent bg-secondary p-6" aria-live="polite">
-        <h2 className="font-heading text-xl">Nouveau prix (aperçu)</h2>
+        <h2 className="font-heading text-xl">Nouveau prix (apercu)</h2>
         <dl className="mt-4 flex flex-col gap-2 text-sm">
           <div className="flex justify-between">
             <dt>
-              Menu ({nbPersonnes} pers.)
-              {apercu.reductionPourcentage > 0 ? `, -${apercu.reductionPourcentage}% reduction` : ''}
+              Menu ({nbPersonnes} pers.{apercu.reductionPourcentage > 0 ? `, -${apercu.reductionPourcentage}% reduction` : ""})
             </dt>
             <dd className="font-bold">{apercu.prixMenu.toFixed(2)} EUR</dd>
           </div>
@@ -253,8 +255,7 @@ export function ModifierAnnulerCommande({ commande }: ModifierAnnulerCommandePro
           </div>
         </dl>
         <p className="mt-3 text-xs text-muted-foreground">
-          Le menu choisi ne peut pas être modifié. Ce montant est un aperçu, le montant définitif
-          est recalculé par le serveur.
+          Ce montant est un apercu : le montant definitif est confirme par email apres validation de la modification.
         </p>
       </div>
 
@@ -264,14 +265,14 @@ export function ModifierAnnulerCommande({ commande }: ModifierAnnulerCommandePro
         </p>
       )}
 
-      <div className="flex gap-3">
-        <Button type="submit" disabled={isLoading}>
-          {isLoading ? 'Enregistrement...' : 'Enregistrer les modifications'}
+      <div className="flex flex-wrap gap-3">
+        <Button type="submit" size="lg" disabled={isLoading}>
+          {isLoading ? "Enregistrement..." : "Enregistrer les modifications"}
         </Button>
-        <Button type="button" variant="outline" onClick={() => setMode('lecture')} disabled={isLoading}>
+        <Button type="button" variant="outline" size="lg" onClick={() => setMode("lecture")} disabled={isLoading}>
           Annuler la modification
         </Button>
       </div>
     </form>
-  )
+  );
 }
