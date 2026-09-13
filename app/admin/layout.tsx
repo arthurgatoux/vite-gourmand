@@ -9,7 +9,7 @@ export default async function AdminLayout({
   const profil = await getCurrentProfile();
 
   if (!profil || profil.role !== "administrateur" || !profil.compte_actif) {
-    redirect("/auth/login?redirect=admin");
+    redirect("/auth/login?redirect=/admin");
   }
 
   return <>{children}</>;
