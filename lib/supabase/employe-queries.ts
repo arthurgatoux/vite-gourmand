@@ -1,6 +1,13 @@
 import { createClient } from './server'
 import type { StatutCommande } from './statuts-commande'
 
+export interface PretMaterielCommande {
+  id: string
+  dateLimiteRetour: string
+  restitue: boolean
+  fraisAppliques: boolean
+}
+
 export interface CommandeEmploye {
   id: string
   nomClient: string
@@ -12,6 +19,8 @@ export interface CommandeEmploye {
   prixTotal: number
   statutCourant: StatutCommande
   dateCreation: string
+  materielPrete: boolean
+  pretMateriel: PretMaterielCommande | null
 }
 
 /**
@@ -32,8 +41,15 @@ export async function getCommandesEmploye(): Promise<CommandeEmploye[]> {
       prix_total,
       statut_courant,
       date_creation,
+      materiel_prete,
       menus (
         titre
+      ),
+      prets_materiel (
+        id,
+        date_limite_retour,
+        restitue,
+        frais_appliques
       )
     `)
     .order('date_creation', { ascending: false })
@@ -43,18 +59,31 @@ export async function getCommandesEmploye(): Promise<CommandeEmploye[]> {
     return []
   }
 
-  return data.map(cmd => ({
-    id: cmd.id,
-    nomClient: cmd.nom_client,
-    prenomClient: cmd.prenom_client,
-    emailClient: cmd.email_client,
-    menuTitre: cmd.menus.titre,
-    datePrestation: cmd.date_prestation,
-    nbPersonnes: cmd.nb_personnes,
-    prixTotal: Number(cmd.prix_total),
-    statutCourant: cmd.statut_courant,
-    dateCreation: cmd.date_creation,
-  }))
+  return data.map(cmd => {
+    const pret = Array.isArray(cmd.prets_materiel) ? cmd.prets_materiel[0] : cmd.prets_materiel
+
+    return {
+      id: cmd.id,
+      nomClient: cmd.nom_client,
+      prenomClient: cmd.prenom_client,
+      emailClient: cmd.email_client,
+      menuTitre: cmd.menus.titre,
+      datePrestation: cmd.date_prestation,
+      nbPersonnes: cmd.nb_personnes,
+      prixTotal: Number(cmd.prix_total),
+      statutCourant: cmd.statut_courant,
+      dateCreation: cmd.date_creation,
+      materielPrete: cmd.materiel_prete,
+      pretMateriel: pret
+        ? {
+            id: pret.id,
+            dateLimiteRetour: pret.date_limite_retour,
+            restitue: pret.restitue,
+            fraisAppliques: pret.frais_appliques,
+          }
+        : null,
+    }
+  })
 }
 
 export interface AvisEmploye {

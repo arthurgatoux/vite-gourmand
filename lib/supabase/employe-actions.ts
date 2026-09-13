@@ -24,7 +24,7 @@ export async function changerStatutCommande(
 
   const { data: commande, error: erreurLecture } = await supabase
     .from("commandes")
-    .select("statut_courant")
+    .select("statut_courant, materiel_prete, prets_materiel ( restitue )")
     .eq("id", commandeId)
     .single()
 
@@ -39,6 +39,18 @@ export async function changerStatutCommande(
     return {
       success: false,
       error: `Transition de "${statutActuel}" vers "${nouveauStatut}" non autorisee. Les statuts se suivent dans l'ordre du processus (ou passage a "annule").`,
+    }
+  }
+
+  // CDC (page 8) : une commande n'est "terminee" que si elle a ete livree
+  // sans pret de materiel, ou si le materiel prete a bien ete restitue.
+  if (nouveauStatut === "termine" && commande.materiel_prete) {
+    const pret = Array.isArray(commande.prets_materiel) ? commande.prets_materiel[0] : commande.prets_materiel
+    if (!pret?.restitue) {
+      return {
+        success: false,
+        error: "Le materiel prete doit etre marque comme restitue avant de clore cette commande.",
+      }
     }
   }
 
@@ -131,6 +143,32 @@ export async function validerAvis(
 
   revalidatePath("/employe")
   revalidatePath("/")
+
+  return { success: true }
+}
+
+// Ticket E6 : Gestion du retour de materiel prete avec notification J+10.
+// Une fois restitue, la commande peut etre cloturee (garde-fou dans
+// changerStatutCommande ci-dessus).
+export async function marquerMaterielRestitue(pretMaterielId: string): Promise<ChangerStatutResult> {
+  const profil = await getCurrentProfile()
+
+  if (!profil || (profil.role !== "employe" && profil.role !== "administrateur")) {
+    return { success: false, error: "Action reservee aux employes et administrateurs." }
+  }
+
+  const supabase = await createClient()
+
+  const { error } = await supabase
+    .from("prets_materiel")
+    .update({ restitue: true })
+    .eq("id", pretMaterielId)
+
+  if (error) {
+    return { success: false, error: "Erreur lors de la mise a jour du pret de materiel : " + error.message }
+  }
+
+  revalidatePath("/employe")
 
   return { success: true }
 }
