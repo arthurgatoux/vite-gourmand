@@ -1,5 +1,6 @@
 "use server";
 
+import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { createClient } from "./server";
 import { getCurrentProfile } from "./get-current-profile";
@@ -16,21 +17,24 @@ export type DonneesModificationProfil = {
   adressePostale: string;
 };
 
-/**
- * CDC page 7 : "un utilisateur, depuis son espace, peut [...] modifier ses
- * informations personnelles."
- *
- * Deplace depuis components/mon-compte/modifier-profil-form.tsx (mutation
- * directe cote client) : la validation des champs (regex telephone, etc.)
- * n'etait appliquee que cote navigateur et pouvait etre contournee via un
- * appel direct a l'API REST Supabase.
- */
+const schemaModificationProfil = z.object({
+  nom: z.string().trim().min(1),
+  prenom: z.string().trim().min(1),
+  telephone: z.string().trim().min(1),
+  adressePostale: z.string().trim().min(1),
+});
+
 export async function modifierProfil(
   donnees: DonneesModificationProfil,
 ): Promise<ProfilActionResult> {
   const profil = await getCurrentProfile();
   if (!profil) {
     return { success: false, error: "Vous devez etre connecte pour modifier votre profil." };
+  }
+
+  const validationZod = schemaModificationProfil.safeParse(donnees);
+  if (!validationZod.success) {
+    return { success: false, error: "Donnees de profil invalides." };
   }
 
   const erreurs = validerModificationProfil(donnees);
