@@ -1,5 +1,6 @@
 "use server";
 
+import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { createClient } from "./server";
 import { getCurrentProfile } from "./get-current-profile";
@@ -16,18 +17,22 @@ export type ModifierCommandeResult =
   | { success: true }
   | { success: false; error: string };
 
-/**
- * CDC page 7 : creation d'une commande depuis la vue detaillee d'un menu.
- * Le prix definitif est toujours recalcule cote serveur par le trigger
- * Postgres `calculer_prix_commande` (migration 006) : cette Server Action
- * ne fait jamais confiance a un montant envoye par le client.
- *
- * Deplace depuis components/commande/commande-form.tsx (mutation directe
- * cote client) vers une Server Action, pour appliquer une regle metier qui
- * n'etait verifiee ni cote client ni en base : le delai minimum de commande
- * du menu (CDC page 4 : "necessite de commander ce menu x jours/semaines
- * avant la prestation").
- */
+const schemaDonneesCommande = z.object({
+  adressePrestation: z.string().trim().min(1),
+  dateprestation: z.string().min(1),
+  heureLivraison: z.string().min(1),
+  nbPersonnes: z.number().int().positive(),
+  estABordeaux: z.boolean(),
+  distanceKm: z.number().nonnegative(),
+});
+
+const schemaCreerCommande = schemaDonneesCommande.extend({
+  nomClient: z.string().trim().min(1),
+  prenomClient: z.string().trim().min(1),
+  emailClient: z.string().trim().email(),
+  telephoneClient: z.string().trim().min(1),
+});
+
 export async function creerCommande(
   menuId: string,
   donnees: DonneesCommande & {
@@ -40,6 +45,11 @@ export async function creerCommande(
   const profil = await getCurrentProfile();
   if (!profil) {
     return { success: false, error: "Vous devez etre connecte pour commander." };
+  }
+
+  const validationZod = schemaCreerCommande.safeParse(donnees);
+  if (!validationZod.success) {
+    return { success: false, error: "Donnees de commande invalides." };
   }
 
   const supabase = await createClient();
@@ -112,15 +122,6 @@ export async function creerCommande(
   return { success: true, commandeId: commande.id };
 }
 
-/**
- * CDC page 7 : "L'annulation de commande est possible, tant qu'un employe
- * n'a pas passe la commande en accepte, la modification est egalement
- * possible : tout est modifiable, sauf le choix du menu."
- * La policy RLS `utilisateur_modifie_sa_commande_en_attente` bloque deja
- * toute tentative hors statut "en_attente" ; cette Server Action revalide
- * les regles metier avant d'ecrire, plutot que de laisser la seule RLS
- * comme garde-fou.
- */
 export async function modifierCommandeUtilisateur(
   commandeId: string,
   donnees: DonneesCommande,
@@ -128,6 +129,11 @@ export async function modifierCommandeUtilisateur(
   const profil = await getCurrentProfile();
   if (!profil) {
     return { success: false, error: "Vous devez etre connecte pour modifier une commande." };
+  }
+
+  const validationZod = schemaDonneesCommande.safeParse(donnees);
+  if (!validationZod.success) {
+    return { success: false, error: "Donnees de commande invalides." };
   }
 
   const supabase = await createClient();
@@ -173,10 +179,6 @@ export async function modifierCommandeUtilisateur(
   return { success: true };
 }
 
-/**
- * CDC page 7 : annulation par l'utilisateur, uniquement avant acceptation
- * par un employe.
- */
 export async function annulerCommandeUtilisateur(
   commandeId: string,
 ): Promise<ModifierCommandeResult> {

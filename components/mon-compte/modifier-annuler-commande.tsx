@@ -2,7 +2,6 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,6 +12,7 @@ import {
   type DonneesCommande,
 } from "@/lib/validations/commande";
 import type { CommandeDetail } from "@/lib/supabase/mon-compte-queries";
+import { modifierCommandeUtilisateur, annulerCommandeUtilisateur } from "@/lib/supabase/commande-actions";
 
 interface ModifierAnnulerCommandeProps {
   commande: CommandeDetail;
@@ -43,7 +43,9 @@ export function ModifierAnnulerCommande({ commande }: ModifierAnnulerCommandePro
     [commande.prixBaseMenu, commande.nbPersonnesMinMenu, nbPersonnes, estABordeaux, distanceKm],
   );
 
-  if (commande.statutCourant !== "en_attente") return null;
+  if (commande.statutCourant !== "en_attente") {
+    return null;
+  }
 
   async function handleModifier(e: React.FormEvent) {
     e.preventDefault();
@@ -59,51 +61,40 @@ export function ModifierAnnulerCommande({ commande }: ModifierAnnulerCommandePro
     };
     const erreurs = validerCommande(donnees, commande.nbPersonnesMinMenu);
     setErreursChamps(erreurs);
-    if (Object.keys(erreurs).length > 0) return;
+    if (Object.keys(erreurs).length > 0) {
+      return;
+    }
 
-    const supabase = createClient();
     setIsLoading(true);
-    try {
-      // CDC : tout est modifiable sauf le choix du menu (verrouille aussi par
-      // un trigger Supabase, empecher_changement_menu_commande). Le prix
-      // definitif est recalcule cote serveur (trigger calculer_prix_commande).
-      const { error } = await supabase
-        .from("commandes")
-        .update({
-          adresse_prestation: adressePrestation,
-          date_prestation: dateprestation,
-          heure_livraison: heureLivraison,
-          nb_personnes: nbPersonnes,
-          distance_km: estABordeaux ? 0 : distanceKm,
-        })
-        .eq("id", commande.id);
-
-      if (error) throw error;
+    // Deplace vers une Server Action (lib/supabase/commande-actions.ts) : le
+    // prix definitif reste recalcule cote serveur par le trigger Postgres
+    // calculer_prix_commande (CDC : "tout est modifiable, sauf le choix du
+    // menu").
+    const resultat = await modifierCommandeUtilisateur(commande.id, donnees);
+    if (resultat.success) {
       setMode("lecture");
       router.refresh();
-    } catch (error: unknown) {
-      setErreurGlobale(error instanceof Error ? error.message : "Une erreur est survenue lors de la modification.");
-    } finally {
-      setIsLoading(false);
+    } else {
+      setErreurGlobale(resultat.error);
     }
+    setIsLoading(false);
   }
 
   async function handleAnnuler() {
-    const confirme = window.confirm("Confirmez-vous l'annulation de cette commande ? Cette action est irreversible.");
+    const confirme = window.confirm(
+      "Confirmez-vous l'annulation de cette commande ? Cette action est irreversible.",
+    );
     if (!confirme) return;
 
-    const supabase = createClient();
     setIsLoading(true);
     setErreurGlobale(null);
-    try {
-      const { error } = await supabase.from("commandes").update({ statut_courant: "annule" }).eq("id", commande.id);
-      if (error) throw error;
+    const resultat = await annulerCommandeUtilisateur(commande.id);
+    if (resultat.success) {
       router.refresh();
-    } catch (error: unknown) {
-      setErreurGlobale(error instanceof Error ? error.message : "Une erreur est survenue lors de l'annulation.");
-    } finally {
-      setIsLoading(false);
+    } else {
+      setErreurGlobale(resultat.error);
     }
+    setIsLoading(false);
   }
 
   if (mode === "lecture") {
@@ -138,14 +129,11 @@ export function ModifierAnnulerCommande({ commande }: ModifierAnnulerCommandePro
             id="adressePrestation"
             required
             aria-invalid={Boolean(erreursChamps.adressePrestation)}
-            aria-describedby={erreursChamps.adressePrestation ? "adressePrestation-erreur" : undefined}
             value={adressePrestation}
             onChange={(e) => setAdressePrestation(e.target.value)}
           />
           {erreursChamps.adressePrestation && (
-            <p id="adressePrestation-erreur" className="text-sm text-red-500">
-              {erreursChamps.adressePrestation}
-            </p>
+            <p className="text-sm text-red-500">{erreursChamps.adressePrestation}</p>
           )}
         </div>
         <div className="grid gap-2">
@@ -155,14 +143,11 @@ export function ModifierAnnulerCommande({ commande }: ModifierAnnulerCommandePro
             type="date"
             required
             aria-invalid={Boolean(erreursChamps.dateprestation)}
-            aria-describedby={erreursChamps.dateprestation ? "dateprestation-erreur" : undefined}
             value={dateprestation}
             onChange={(e) => setDateprestation(e.target.value)}
           />
           {erreursChamps.dateprestation && (
-            <p id="dateprestation-erreur" className="text-sm text-red-500">
-              {erreursChamps.dateprestation}
-            </p>
+            <p className="text-sm text-red-500">{erreursChamps.dateprestation}</p>
           )}
         </div>
         <div className="grid gap-2">
@@ -172,14 +157,11 @@ export function ModifierAnnulerCommande({ commande }: ModifierAnnulerCommandePro
             type="time"
             required
             aria-invalid={Boolean(erreursChamps.heureLivraison)}
-            aria-describedby={erreursChamps.heureLivraison ? "heureLivraison-erreur" : undefined}
             value={heureLivraison}
             onChange={(e) => setHeureLivraison(e.target.value)}
           />
           {erreursChamps.heureLivraison && (
-            <p id="heureLivraison-erreur" className="text-sm text-red-500">
-              {erreursChamps.heureLivraison}
-            </p>
+            <p className="text-sm text-red-500">{erreursChamps.heureLivraison}</p>
           )}
         </div>
         <div className="grid gap-2">
@@ -190,17 +172,14 @@ export function ModifierAnnulerCommande({ commande }: ModifierAnnulerCommandePro
             min={commande.nbPersonnesMinMenu}
             required
             aria-invalid={Boolean(erreursChamps.nbPersonnes)}
-            aria-describedby="nbPersonnes-aide nbPersonnes-erreur"
             value={nbPersonnes}
             onChange={(e) => setNbPersonnes(Number(e.target.value))}
           />
-          <p id="nbPersonnes-aide" className="text-xs text-muted-foreground">
+          <p className="text-xs text-muted-foreground">
             Minimum {commande.nbPersonnesMinMenu} personnes pour ce menu.
           </p>
           {erreursChamps.nbPersonnes && (
-            <p id="nbPersonnes-erreur" className="text-sm text-red-500">
-              {erreursChamps.nbPersonnes}
-            </p>
+            <p className="text-sm text-red-500">{erreursChamps.nbPersonnes}</p>
           )}
         </div>
         <div className="grid gap-2">
@@ -222,14 +201,11 @@ export function ModifierAnnulerCommande({ commande }: ModifierAnnulerCommandePro
                 type="number"
                 min={1}
                 aria-invalid={Boolean(erreursChamps.distanceKm)}
-                aria-describedby={erreursChamps.distanceKm ? "distanceKm-erreur" : undefined}
                 value={distanceKm}
                 onChange={(e) => setDistanceKm(Number(e.target.value))}
               />
               {erreursChamps.distanceKm && (
-                <p id="distanceKm-erreur" className="text-sm text-red-500">
-                  {erreursChamps.distanceKm}
-                </p>
+                <p className="text-sm text-red-500">{erreursChamps.distanceKm}</p>
               )}
             </div>
           )}
@@ -241,7 +217,7 @@ export function ModifierAnnulerCommande({ commande }: ModifierAnnulerCommandePro
         <dl className="mt-4 flex flex-col gap-2 text-sm">
           <div className="flex justify-between">
             <dt>
-              Menu ({nbPersonnes} pers.{apercu.reductionPourcentage > 0 ? `, -${apercu.reductionPourcentage}% reduction` : ""})
+              Menu ({nbPersonnes} pers.){apercu.reductionPourcentage > 0 ? ` (-${apercu.reductionPourcentage}% reduction)` : ""}
             </dt>
             <dd className="font-bold">{apercu.prixMenu.toFixed(2)} EUR</dd>
           </div>
@@ -255,7 +231,7 @@ export function ModifierAnnulerCommande({ commande }: ModifierAnnulerCommandePro
           </div>
         </dl>
         <p className="mt-3 text-xs text-muted-foreground">
-          Ce montant est un apercu : le montant definitif est confirme par email apres validation de la modification.
+          Ce montant est un apercu, le montant definitif est confirme par email apres validation de la modification.
         </p>
       </div>
 

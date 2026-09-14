@@ -1,5 +1,6 @@
 "use server";
 
+import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { createClient } from "./server";
 import { getCurrentProfile } from "./get-current-profile";
@@ -9,18 +10,11 @@ export type DeposerAvisResult =
   | { success: true }
   | { success: false; error: string };
 
-/**
- * CDC page 7 : "quand la commande est terminee [...] l'utilisateur est
- * notifie par mail qu'il peut se connecter a son compte pour donner son
- * avis depuis la commande. Il doit pouvoir donner une note entre 1 et 5,
- * suivi d'un commentaire."
- *
- * Deplace depuis components/mon-compte/deposer-avis.tsx (mutation directe
- * cote client) : sans cette Server Action, seule la policy RLS
- * `utilisateur_depose_avis_commande_terminee` protegeait l'ecriture, sans
- * revalidation metier (note bornee 1-5, commande bien terminee) cote
- * serveur.
- */
+const schemaDeposerAvis = z.object({
+  note: z.number().int().min(1).max(5),
+  commentaire: z.string().trim().min(1),
+});
+
 export async function deposerAvis(
   commandeId: string,
   donnees: DonneesAvis,
@@ -28,6 +22,11 @@ export async function deposerAvis(
   const profil = await getCurrentProfile();
   if (!profil) {
     return { success: false, error: "Vous devez etre connecte pour deposer un avis." };
+  }
+
+  const validationZod = schemaDeposerAvis.safeParse(donnees);
+  if (!validationZod.success) {
+    return { success: false, error: "Donnees d'avis invalides." };
   }
 
   const erreurs = validerAvis(donnees);

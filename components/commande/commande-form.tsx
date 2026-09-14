@@ -1,7 +1,6 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,6 +8,7 @@ import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { validerCommande, calculerApercuPrix, type ChampCommande } from "@/lib/validations/commande";
 import type { MenuPourCommande, ProfilPourCommande } from "@/lib/supabase/commande-queries";
+import { creerCommande } from "@/lib/supabase/commande-actions";
 
 type CommandeFormProps = {
   menu: MenuPourCommande;
@@ -40,40 +40,41 @@ export function CommandeForm({ menu, profil }: CommandeFormProps) {
     e.preventDefault();
     setErreurGlobale(null);
 
-    const erreurs = validerCommande(
-      { adressePrestation, dateprestation, heureLivraison, nbPersonnes, estABordeaux, distanceKm },
-      menu.nbPersonnesMin,
-    );
+    const donnees = {
+      adressePrestation,
+      dateprestation,
+      heureLivraison,
+      nbPersonnes,
+      estABordeaux,
+      distanceKm,
+    };
+    const erreurs = validerCommande(donnees, menu.nbPersonnesMin);
     setErreursChamps(erreurs);
-    if (Object.keys(erreurs).length > 0) return;
+    if (Object.keys(erreurs).length > 0) {
+      return;
+    }
 
-    const supabase = createClient();
     setIsLoading(true);
     try {
-      // Le prix affiche ci-dessus est un apercu : le montant qui fait foi
-      // est recalcule par le trigger Supabase calculer_prix_commande.
-      // Jamais confiance au client pour un montant a facturer.
-      const { data, error } = await supabase
-        .from("commandes")
-        .insert({
-          menu_id: menu.id,
-          nom_client: nomClient,
-          prenom_client: prenomClient,
-          email_client: emailClient,
-          telephone_client: telephoneClient,
-          adresse_prestation: adressePrestation,
-          date_prestation: dateprestation,
-          heure_livraison: heureLivraison,
-          nb_personnes: nbPersonnes,
-          distance_km: estABordeaux ? 0 : distanceKm,
-        })
-        .select("id")
-        .single();
-
-      if (error) throw error;
-      router.push(`/commande/succes?id=${data.id}`);
+      // Deplace vers une Server Action (lib/supabase/commande-actions.ts) : le
+      // prix definitif reste recalcule cote serveur par le trigger Postgres
+      // calculer_prix_commande, et le delai minimum de commande du menu (CDC
+      // page 4) est desormais verifie avant l'insertion.
+      const resultat = await creerCommande(menu.id, {
+        ...donnees,
+        nomClient,
+        prenomClient,
+        emailClient,
+        telephoneClient,
+      });
+      if (!resultat.success) {
+        throw new Error(resultat.error);
+      }
+      router.push(`/commande/succes?id=${resultat.commandeId}`);
     } catch (error: unknown) {
-      setErreurGlobale(error instanceof Error ? error.message : "Une erreur est survenue lors de la commande.");
+      setErreurGlobale(
+        error instanceof Error ? error.message : "Une erreur est survenue lors de la commande.",
+      );
     } finally {
       setIsLoading(false);
     }
@@ -93,32 +94,15 @@ export function CommandeForm({ menu, profil }: CommandeFormProps) {
         </div>
         <div className="grid gap-2">
           <Label htmlFor="prenomClient">Prenom</Label>
-          <Input
-            id="prenomClient"
-            required
-            value={prenomClient}
-            onChange={(e) => setPrenomClient(e.target.value)}
-          />
+          <Input id="prenomClient" required value={prenomClient} onChange={(e) => setPrenomClient(e.target.value)} />
         </div>
         <div className="grid gap-2">
           <Label htmlFor="emailClient">Email</Label>
-          <Input
-            id="emailClient"
-            type="email"
-            required
-            value={emailClient}
-            onChange={(e) => setEmailClient(e.target.value)}
-          />
+          <Input id="emailClient" type="email" required value={emailClient} onChange={(e) => setEmailClient(e.target.value)} />
         </div>
         <div className="grid gap-2">
           <Label htmlFor="telephoneClient">GSM</Label>
-          <Input
-            id="telephoneClient"
-            type="tel"
-            required
-            value={telephoneClient ?? ""}
-            onChange={(e) => setTelephoneClient(e.target.value)}
-          />
+          <Input id="telephoneClient" type="tel" required value={telephoneClient ?? ""} onChange={(e) => setTelephoneClient(e.target.value)} />
         </div>
       </fieldset>
 
@@ -130,14 +114,11 @@ export function CommandeForm({ menu, profil }: CommandeFormProps) {
             id="adressePrestation"
             required
             aria-invalid={Boolean(erreursChamps.adressePrestation)}
-            aria-describedby={erreursChamps.adressePrestation ? "adressePrestation-erreur" : undefined}
             value={adressePrestation}
             onChange={(e) => setAdressePrestation(e.target.value)}
           />
           {erreursChamps.adressePrestation && (
-            <p id="adressePrestation-erreur" className="text-sm text-red-500">
-              {erreursChamps.adressePrestation}
-            </p>
+            <p className="text-sm text-red-500">{erreursChamps.adressePrestation}</p>
           )}
         </div>
         <div className="grid gap-2">
@@ -147,14 +128,11 @@ export function CommandeForm({ menu, profil }: CommandeFormProps) {
             type="date"
             required
             aria-invalid={Boolean(erreursChamps.dateprestation)}
-            aria-describedby={erreursChamps.dateprestation ? "dateprestation-erreur" : undefined}
             value={dateprestation}
             onChange={(e) => setDateprestation(e.target.value)}
           />
           {erreursChamps.dateprestation && (
-            <p id="dateprestation-erreur" className="text-sm text-red-500">
-              {erreursChamps.dateprestation}
-            </p>
+            <p className="text-sm text-red-500">{erreursChamps.dateprestation}</p>
           )}
         </div>
         <div className="grid gap-2">
@@ -164,14 +142,11 @@ export function CommandeForm({ menu, profil }: CommandeFormProps) {
             type="time"
             required
             aria-invalid={Boolean(erreursChamps.heureLivraison)}
-            aria-describedby={erreursChamps.heureLivraison ? "heureLivraison-erreur" : undefined}
             value={heureLivraison}
             onChange={(e) => setHeureLivraison(e.target.value)}
           />
           {erreursChamps.heureLivraison && (
-            <p id="heureLivraison-erreur" className="text-sm text-red-500">
-              {erreursChamps.heureLivraison}
-            </p>
+            <p className="text-sm text-red-500">{erreursChamps.heureLivraison}</p>
           )}
         </div>
         <div className="grid gap-2">
@@ -182,18 +157,14 @@ export function CommandeForm({ menu, profil }: CommandeFormProps) {
             min={menu.nbPersonnesMin}
             required
             aria-invalid={Boolean(erreursChamps.nbPersonnes)}
-            aria-describedby={cn("nbPersonnes-aide", erreursChamps.nbPersonnes && "nbPersonnes-erreur")}
             value={nbPersonnes}
             onChange={(e) => setNbPersonnes(Number(e.target.value))}
           />
-          <p id="nbPersonnes-aide" className="text-xs text-muted-foreground">
-            Minimum {menu.nbPersonnesMin} personnes pour ce menu. A partir de {menu.nbPersonnesMin + 5} personnes,
-            une reduction de 10% s&apos;applique.
+          <p className="text-xs text-muted-foreground">
+            Minimum {menu.nbPersonnesMin} personnes pour ce menu. A partir de {menu.nbPersonnesMin + 5} personnes une reduction de 10% s&apos;applique.
           </p>
           {erreursChamps.nbPersonnes && (
-            <p id="nbPersonnes-erreur" className="text-sm text-red-500">
-              {erreursChamps.nbPersonnes}
-            </p>
+            <p className="text-sm text-red-500">{erreursChamps.nbPersonnes}</p>
           )}
         </div>
         <div className="grid gap-2">
@@ -215,14 +186,11 @@ export function CommandeForm({ menu, profil }: CommandeFormProps) {
                 type="number"
                 min={1}
                 aria-invalid={Boolean(erreursChamps.distanceKm)}
-                aria-describedby={erreursChamps.distanceKm ? "distanceKm-erreur" : undefined}
                 value={distanceKm}
                 onChange={(e) => setDistanceKm(Number(e.target.value))}
               />
               {erreursChamps.distanceKm && (
-                <p id="distanceKm-erreur" className="text-sm text-red-500">
-                  {erreursChamps.distanceKm}
-                </p>
+                <p className="text-sm text-red-500">{erreursChamps.distanceKm}</p>
               )}
             </div>
           )}
@@ -234,7 +202,7 @@ export function CommandeForm({ menu, profil }: CommandeFormProps) {
         <dl className="mt-4 flex flex-col gap-2 text-sm">
           <div className="flex justify-between">
             <dt>
-              Menu ({nbPersonnes} pers.{apercu.reductionPourcentage > 0 ? `, -${apercu.reductionPourcentage}% reduction` : ""})
+              Menu ({nbPersonnes} pers.){apercu.reductionPourcentage > 0 ? ` (-${apercu.reductionPourcentage}% reduction)` : ""}
             </dt>
             <dd className="font-bold">{apercu.prixMenu.toFixed(2)} EUR</dd>
           </div>
@@ -248,7 +216,7 @@ export function CommandeForm({ menu, profil }: CommandeFormProps) {
           </div>
         </dl>
         <p className="mt-3 text-xs text-muted-foreground">
-          Ce montant est un apercu : le montant definitif est confirme par email apres validation de la commande.
+          Ce montant est un apercu, le montant definitif est confirme par email apres validation de la commande.
         </p>
       </div>
 
