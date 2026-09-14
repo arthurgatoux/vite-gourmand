@@ -2,11 +2,11 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { validerAvis, type ChampAvis } from '@/lib/validations/avis'
 import { type AvisExistant } from '@/lib/supabase/mon-compte-queries'
+import { deposerAvis } from '@/lib/supabase/avis-actions'
 
 interface DeposerAvisProps {
   commandeId: string
@@ -14,8 +14,8 @@ interface DeposerAvisProps {
 }
 
 const LABEL_STATUT_AVIS: Record<AvisExistant['statutValidation'], string> = {
-  en_attente: 'En attente de validation par notre équipe',
-  valide: "Publié sur notre page d'accueil",
+  en_attente: 'En attente de validation par notre \u00e9quipe',
+  valide: "Publi\u00e9 sur notre page d'accueil",
   refuse: 'Non retenu pour publication',
 }
 
@@ -34,10 +34,10 @@ export function DeposerAvis({ commandeId, avisExistant }: DeposerAvisProps) {
         <p
           className="mt-2 text-lg text-accent"
           role="img"
-          aria-label={`Note donnée : ${avisExistant.note} sur 5`}
+          aria-label={`Note donn\u00e9e : ${avisExistant.note} sur 5`}
         >
-          {'★'.repeat(avisExistant.note)}
-          {'☆'.repeat(5 - avisExistant.note)}
+          {'\u2605'.repeat(avisExistant.note)}
+          {'\u2606'.repeat(5 - avisExistant.note)}
         </p>
         <p className="mt-2 text-sm">{avisExistant.commentaire}</p>
         <p className="mt-4 text-xs text-muted-foreground">
@@ -55,28 +55,17 @@ export function DeposerAvis({ commandeId, avisExistant }: DeposerAvisProps) {
     setErreursChamps(erreurs)
     if (Object.keys(erreurs).length > 0) return
 
-    const supabase = createClient()
     setIsLoading(true)
-    try {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) throw new Error('Vous devez être connecté pour déposer un avis.')
-
-      const { error } = await supabase.from('avis').insert({
-        commande_id: commandeId,
-        utilisateur_id: user.id,
-        note,
-        commentaire: commentaire.trim(),
-      })
-
-      if (error) throw error
+    // Deplace vers une Server Action (lib/supabase/avis-actions.ts) : revalide
+    // la note (1-5) et le statut "termine" de la commande cote serveur,
+    // plutot que de laisser la seule policy RLS comme garde-fou.
+    const resultat = await deposerAvis(commandeId, { note, commentaire })
+    if (resultat.success) {
       router.refresh()
-    } catch (error: unknown) {
-      setErreurGlobale(
-        error instanceof Error ? error.message : "Une erreur est survenue lors de l'envoi de votre avis."
-      )
-    } finally {
-      setIsLoading(false)
+    } else {
+      setErreurGlobale(resultat.error)
     }
+    setIsLoading(false)
   }
 
   return (
@@ -88,7 +77,7 @@ export function DeposerAvis({ commandeId, avisExistant }: DeposerAvisProps) {
       <div>
         <h2 className="font-heading text-xl">Donnez votre avis</h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          Votre commande est terminée. Dites-nous comment s'est passée votre prestation.
+          Votre commande est termin\u00e9e. Dites-nous comment s'est pass\u00e9e votre prestation.
         </p>
       </div>
 

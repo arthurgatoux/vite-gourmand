@@ -1,63 +1,49 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { validerModificationProfil, type ChampProfil } from '@/lib/validations/profil'
-import { type ProfilComplet } from '@/lib/supabase/profil-queries'
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { validerModificationProfil, type ChampProfil } from "@/lib/validations/profil";
+import { type ProfilComplet } from "@/lib/supabase/profil-queries";
+import { modifierProfil } from "@/lib/supabase/mon-compte-actions";
 
 interface ModifierProfilFormProps {
-  profil: ProfilComplet
+  profil: ProfilComplet;
 }
 
 export function ModifierProfilForm({ profil }: ModifierProfilFormProps) {
-  const router = useRouter()
-  const [nom, setNom] = useState(profil.nom)
-  const [prenom, setPrenom] = useState(profil.prenom)
-  const [telephone, setTelephone] = useState(profil.telephone ?? '')
-  const [adressePostale, setAdressePostale] = useState(profil.adressePostale ?? '')
-  const [erreursChamps, setErreursChamps] = useState<Partial<Record<ChampProfil, string>>>({})
-  const [erreurGlobale, setErreurGlobale] = useState<string | null>(null)
-  const [succes, setSucces] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter();
+  const [nom, setNom] = useState(profil.nom);
+  const [prenom, setPrenom] = useState(profil.prenom);
+  const [telephone, setTelephone] = useState(profil.telephone ?? "");
+  const [adressePostale, setAdressePostale] = useState(profil.adressePostale ?? "");
+  const [erreursChamps, setErreursChamps] = useState<Partial<Record<ChampProfil, string>>>({});
+  const [erreurGlobale, setErreurGlobale] = useState<string | null>(null);
+  const [succes, setSucces] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    setErreurGlobale(null)
-    setSucces(false)
+    e.preventDefault();
+    setErreurGlobale(null);
+    setSucces(false);
 
-    const erreurs = validerModificationProfil({ nom, prenom, telephone, adressePostale })
-    setErreursChamps(erreurs)
-    if (Object.keys(erreurs).length > 0) return
+    const erreurs = validerModificationProfil({ nom, prenom, telephone, adressePostale });
+    setErreursChamps(erreurs);
+    if (Object.keys(erreurs).length > 0) return;
 
-    const supabase = createClient()
-    setIsLoading(true)
-    try {
-      // L'email (identifiant Supabase Auth) n'est pas modifiable depuis ce formulaire :
-      // il n'est pas synchronise automatiquement avec auth.users et casserait la connexion.
-      const { error } = await supabase
-        .from('profils')
-        .update({
-          nom: nom.trim(),
-          prenom: prenom.trim(),
-          telephone: telephone.trim(),
-          adresse_postale: adressePostale.trim(),
-        })
-        .eq('id', profil.id)
-
-      if (error) throw error
-      setSucces(true)
-      router.refresh()
-    } catch (error: unknown) {
-      setErreurGlobale(
-        error instanceof Error ? error.message : 'Une erreur est survenue lors de la mise a jour.'
-      )
-    } finally {
-      setIsLoading(false)
+    setIsLoading(true);
+    // Deplace vers une Server Action (lib/supabase/mon-compte-actions.ts) :
+    // la validation n'etait appliquee que cote navigateur auparavant.
+    const resultat = await modifierProfil({ nom, prenom, telephone, adressePostale });
+    if (resultat.success) {
+      setSucces(true);
+      router.refresh();
+    } else {
+      setErreurGlobale(resultat.error);
     }
+    setIsLoading(false);
   }
 
   return (
@@ -70,7 +56,7 @@ export function ModifierProfilForm({ profil }: ModifierProfilFormProps) {
         <Label htmlFor="email">Email (identifiant de connexion)</Label>
         <Input id="email" type="email" value={profil.email} disabled readOnly />
         <p className="text-xs text-muted-foreground">
-          L'email de connexion ne peut pas être modifié depuis cet espace. Contactez-nous si besoin.
+          L&apos;email de connexion ne peut pas etre modifie depuis cet espace. Contactez-nous si besoin.
         </p>
       </div>
 
@@ -82,35 +68,36 @@ export function ModifierProfilForm({ profil }: ModifierProfilFormProps) {
             required
             aria-invalid={Boolean(erreursChamps.nom)}
             value={nom}
-            onChange={e => setNom(e.target.value)}
+            onChange={(e) => setNom(e.target.value)}
           />
           {erreursChamps.nom && <p className="text-sm text-red-500">{erreursChamps.nom}</p>}
         </div>
+
         <div className="grid gap-2">
-          <Label htmlFor="prenom">Prénom</Label>
+          <Label htmlFor="prenom">Prenom</Label>
           <Input
             id="prenom"
             required
             aria-invalid={Boolean(erreursChamps.prenom)}
             value={prenom}
-            onChange={e => setPrenom(e.target.value)}
+            onChange={(e) => setPrenom(e.target.value)}
           />
           {erreursChamps.prenom && <p className="text-sm text-red-500">{erreursChamps.prenom}</p>}
         </div>
+
         <div className="grid gap-2">
-          <Label htmlFor="telephone">Téléphone</Label>
+          <Label htmlFor="telephone">Telephone</Label>
           <Input
             id="telephone"
             type="tel"
             required
             aria-invalid={Boolean(erreursChamps.telephone)}
             value={telephone}
-            onChange={e => setTelephone(e.target.value)}
+            onChange={(e) => setTelephone(e.target.value)}
           />
-          {erreursChamps.telephone && (
-            <p className="text-sm text-red-500">{erreursChamps.telephone}</p>
-          )}
+          {erreursChamps.telephone && <p className="text-sm text-red-500">{erreursChamps.telephone}</p>}
         </div>
+
         <div className="grid gap-2 sm:col-span-2">
           <Label htmlFor="adressePostale">Adresse postale</Label>
           <Input
@@ -118,7 +105,7 @@ export function ModifierProfilForm({ profil }: ModifierProfilFormProps) {
             required
             aria-invalid={Boolean(erreursChamps.adressePostale)}
             value={adressePostale}
-            onChange={e => setAdressePostale(e.target.value)}
+            onChange={(e) => setAdressePostale(e.target.value)}
           />
           {erreursChamps.adressePostale && (
             <p className="text-sm text-red-500">{erreursChamps.adressePostale}</p>
@@ -128,7 +115,7 @@ export function ModifierProfilForm({ profil }: ModifierProfilFormProps) {
 
       {succes && (
         <p className="text-sm text-green-600" role="status">
-          Vos informations ont bien été mises à jour.
+          Vos informations ont bien ete mises a jour.
         </p>
       )}
       {erreurGlobale && (
@@ -138,8 +125,8 @@ export function ModifierProfilForm({ profil }: ModifierProfilFormProps) {
       )}
 
       <Button type="submit" disabled={isLoading} className="w-fit">
-        {isLoading ? 'Enregistrement...' : 'Enregistrer mes informations'}
+        {isLoading ? "Enregistrement..." : "Enregistrer mes informations"}
       </Button>
     </form>
-  )
+  );
 }
