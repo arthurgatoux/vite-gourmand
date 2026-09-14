@@ -73,8 +73,8 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl">Creer un compte</CardTitle>
-          <CardDescription>Renseignez vos informations pour commander vos menus evenementiels</CardDescription>
+          <CardTitle className="text-2xl">Créer un compte</CardTitle>
+          <CardDescription>Renseignez vos informations pour commander vos menus événementiels</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSignUp} noValidate>
@@ -99,7 +99,7 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
                   )}
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="prenom">Prenom</Label>
+                  <Label htmlFor="prenom">Prénom</Label>
                   <Input
                     id="prenom"
                     type="text"
@@ -137,7 +137,7 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
                 )}
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="telephone">Numero de GSM</Label>
+                <Label htmlFor="telephone">Numéro de GSM</Label>
                 <Input
                   id="telephone"
                   type="tel"
@@ -161,7 +161,7 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
                   id="adressePostale"
                   type="text"
                   autoComplete="street-address"
-                  placeholder="12 rue des Fetes, 33000 Bordeaux"
+                  placeholder="12 rue des Fêtes, 33000 Bordeaux"
                   required
                   aria-invalid={Boolean(erreursChamps.adressePostale)}
                   aria-describedby={erreursChamps.adressePostale ? "adressePostale-erreur" : undefined}
@@ -192,7 +192,7 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
                   </p>
                 )}
                 <p id="mot-de-passe-aide" className="text-xs text-muted-foreground">
-                  10 caracteres minimum, avec une majuscule, une minuscule, un chiffre et un caractere special.
+                  10 caractères minimum, avec une majuscule, une minuscule, un chiffre et un caractère spécial.
                 </p>
               </div>
               <div className="grid gap-2">
@@ -221,11 +221,11 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
                 </p>
               )}
               <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Creation du compte..." : "Creer mon compte"}
+                {isLoading ? "Création du compte..." : "Créer mon compte"}
               </Button>
             </div>
             <div className="mt-4 text-center text-sm">
-              Vous avez deja un compte ?{" "}
+              Vous avez déjà un compte ?{" "}
               <Link href="/auth/login" className="underline underline-offset-4">
                 Se connecter
               </Link>

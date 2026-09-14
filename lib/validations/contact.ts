@@ -20,13 +20,13 @@ export function validerContact(
   if (!donnees.titre.trim()) {
     erreurs.titre = "Le titre est obligatoire.";
   } else if (donnees.titre.trim().length > 150) {
-    erreurs.titre = "Le titre ne doit pas depasser 150 caracteres.";
+    erreurs.titre = "Le titre ne doit pas dépasser 150 caractères.";
   }
 
   if (!donnees.description.trim()) {
     erreurs.description = "Le message est obligatoire.";
   } else if (donnees.description.trim().length < 10) {
-    erreurs.description = "Le message doit contenir au moins 10 caracteres.";
+    erreurs.description = "Le message doit contenir au moins 10 caractères.";
   }
 
   if (!donnees.email.trim()) {

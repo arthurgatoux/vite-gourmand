@@ -20,7 +20,7 @@ export function PlatsListe({ plats: platsInitiaux }: PlatsListeProps) {
   const [isPending, startTransition] = useTransition()
 
   function handleSupprimer(id: string) {
-    if (!window.confirm("Supprimer definitivement ce plat ?")) return
+    if (!window.confirm("Supprimer définitivement ce plat ?")) return
     setErreur(null)
     startTransition(async () => {
       const resultat = await supprimerPlat(id)

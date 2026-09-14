@@ -4,7 +4,7 @@ import { EmployeNav } from '@/components/employe/employe-nav'
 
 export const metadata = {
   title: 'Gestion des plats - Vite Gourmand',
-  description: 'Creation, modification et suppression des plats.',
+  description: 'Création, modification et suppression des plats.',
 }
 
 export default async function EmployePlatsPage() {

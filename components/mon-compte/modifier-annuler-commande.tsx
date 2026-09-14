@@ -82,7 +82,7 @@ export function ModifierAnnulerCommande({ commande }: ModifierAnnulerCommandePro
 
   async function handleAnnuler() {
     const confirme = window.confirm(
-      "Confirmez-vous l'annulation de cette commande ? Cette action est irreversible.",
+      "Confirmez-vous l'annulation de cette commande ? Cette action est irréversible.",
     );
     if (!confirme) return;
 
@@ -151,7 +151,7 @@ export function ModifierAnnulerCommande({ commande }: ModifierAnnulerCommandePro
           )}
         </div>
         <div className="grid gap-2">
-          <Label htmlFor="heureLivraison">Heure de livraison souhaitee</Label>
+          <Label htmlFor="heureLivraison">Heure de livraison souhaitée</Label>
           <Input
             id="heureLivraison"
             type="time"
@@ -190,7 +190,7 @@ export function ModifierAnnulerCommande({ commande }: ModifierAnnulerCommandePro
             onChange={(e) => setEstABordeaux(e.target.value === "bordeaux")}
             className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-base shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
           >
-            <option value="bordeaux">A Bordeaux (5,00 EUR de livraison)</option>
+            <option value="bordeaux">À Bordeaux (5,00 EUR de livraison)</option>
             <option value="hors-bordeaux">Hors Bordeaux (5,00 EUR + 0,59 EUR/km)</option>
           </select>
           {!estABordeaux && (
@@ -213,11 +213,11 @@ export function ModifierAnnulerCommande({ commande }: ModifierAnnulerCommandePro
       </fieldset>
 
       <div className="rounded-xl border-2 border-accent bg-secondary p-6" aria-live="polite">
-        <h2 className="font-heading text-xl">Nouveau prix (apercu)</h2>
+        <h2 className="font-heading text-xl">Nouveau prix (aperçu)</h2>
         <dl className="mt-4 flex flex-col gap-2 text-sm">
           <div className="flex justify-between">
             <dt>
-              Menu ({nbPersonnes} pers.){apercu.reductionPourcentage > 0 ? ` (-${apercu.reductionPourcentage}% reduction)` : ""}
+              Menu ({nbPersonnes} pers.){apercu.reductionPourcentage > 0 ? ` (-${apercu.reductionPourcentage}% réduction)` : ""}
             </dt>
             <dd className="font-bold">{apercu.prixMenu.toFixed(2)} EUR</dd>
           </div>
@@ -231,7 +231,7 @@ export function ModifierAnnulerCommande({ commande }: ModifierAnnulerCommandePro
           </div>
         </dl>
         <p className="mt-3 text-xs text-muted-foreground">
-          Ce montant est un apercu, le montant definitif est confirme par email apres validation de la modification.
+          Ce montant est un aperçu, le montant définitif est confirmé par email après validation de la modification.
         </p>
       </div>
 

@@ -48,14 +48,14 @@ export function MenusFiltres({ filtres, themes, regimes, onChange, onReset }: Me
       </div>
 
       <div className="flex flex-col gap-2">
-        <Label htmlFor="filtre-theme">Theme</Label>
+        <Label htmlFor="filtre-theme">Thème</Label>
         <select
           id="filtre-theme"
           value={filtres.theme ?? ""}
           onChange={(e) => onChange({ ...filtres, theme: e.target.value || null })}
           className="flex h-11 w-full rounded-md border border-input bg-background px-3 text-base shadow-sm focus-visible:outline-none focus-visible:ring focus-visible:ring-ring"
         >
-          <option value="">Tous les themes</option>
+          <option value="">Tous les thèmes</option>
           {themes.map((theme) => (
             <option key={theme} value={theme}>
               {theme}
@@ -65,14 +65,14 @@ export function MenusFiltres({ filtres, themes, regimes, onChange, onReset }: Me
       </div>
 
       <div className="flex flex-col gap-2">
-        <Label htmlFor="filtre-regime">Regime</Label>
+        <Label htmlFor="filtre-regime">Régime</Label>
         <select
           id="filtre-regime"
           value={filtres.regime ?? ""}
           onChange={(e) => onChange({ ...filtres, regime: e.target.value || null })}
           className="flex h-11 w-full rounded-md border border-input bg-background px-3 text-base shadow-sm focus-visible:outline-none focus-visible:ring focus-visible:ring-ring"
         >
-          <option value="">Tous les regimes</option>
+          <option value="">Tous les régimes</option>
           {regimes.map((regime) => (
             <option key={regime} value={regime}>
               {regime}
@@ -98,7 +98,7 @@ export function MenusFiltres({ filtres, themes, regimes, onChange, onReset }: Me
 
       <div className="sm:col-span-2 lg:col-span-5">
         <Button type="button" variant="outline" onClick={onReset}>
-          Reinitialiser les filtres
+          Réinitialiser les filtres
         </Button>
       </div>
     </fieldset>

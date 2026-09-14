@@ -18,7 +18,7 @@ export interface DonneesPlat {
 async function verifierRoleEmploye() {
   const profil = await getCurrentProfile()
   if (!profil || (profil.role !== "employe" && profil.role !== "administrateur")) {
-    return { autorise: false as const, error: "Action reservee aux employes et administrateurs." }
+    return { autorise: false as const, error: "Action réservée aux employés et administrateurs." }
   }
   return { autorise: true as const }
 }
@@ -48,7 +48,7 @@ export async function creerPlat(donnees: DonneesPlat): Promise<PlatActionResult>
     .single()
 
   if (erreurPlat || !plat) {
-    return { success: false, error: "Erreur lors de la creation du plat : " + erreurPlat?.message }
+    return { success: false, error: "Erreur lors de la création du plat : " + erreurPlat?.message }
   }
 
   if (donnees.allergeneIds.length > 0) {
@@ -113,7 +113,7 @@ export async function supprimerPlat(platId: string): Promise<PlatActionResult> {
   if (count && count > 0) {
     return {
       success: false,
-      error: `Ce plat est utilise dans ${count} menu(s). Retirez-le de ces menus avant de le supprimer.`,
+      error: `Ce plat est utilisé dans ${count} menu(s). Retirez-le de ces menus avant de le supprimer.`,
     }
   }
 

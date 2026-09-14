@@ -3,21 +3,21 @@ import { Wheat, GlassWater, PenLine } from "lucide-react";
 const ENGAGEMENTS = [
   {
     icon: Wheat,
-    titre: "La qualite des produits",
+    titre: "La qualité des produits",
     description:
-      "Des ingredients frais, locaux et rigoureusement selectionnes au fil des saisons.",
+      "Des ingrédients frais, locaux et rigoureusement sélectionnés au fil des saisons.",
   },
   {
     icon: GlassWater,
-    titre: "L'experience evenementielle",
+    titre: "L'expérience événementielle",
     description:
-      "25 ans de maitrise, du diner intime aux receptions de grande ampleur.",
+      "25 ans de maîtrise, du dîner intime aux réceptions de grande ampleur.",
   },
   {
     icon: PenLine,
     titre: "Le sur-mesure",
     description:
-      "Un menu, une scenographie et un service penses pour votre histoire.",
+      "Un menu, une scénographie et un service pensés pour votre histoire.",
   },
 ];
 
@@ -28,7 +28,7 @@ export function EquipeSection() {
         <div
           className="aspect-[4/3] w-full rounded-3xl bg-gradient-to-br from-primary to-accent"
           role="img"
-          aria-label="Julie et Jose, fondateurs de Vite et Gourmand"
+          aria-label="Julie et José, fondateurs de Vite et Gourmand"
         />
 
         <div>
@@ -36,16 +36,16 @@ export function EquipeSection() {
             Une histoire de goût
           </p>
           <h2 id="equipe-heading" className="mt-3 font-heading text-4xl lg:text-5xl">
-            Julie &amp; Jose, une passion partagee depuis 25 ans
+            Julie &amp; José, une passion partagée depuis 25 ans
           </h2>
           <p className="mt-4 text-base leading-relaxed text-muted-foreground">
-            A Bordeaux, notre maison imagine des receptions qui ressemblent a
-            celles et ceux qui les celebrent. Julie orchestre chaque detail,
-            Jose compose une cuisine sincere, inspiree des saisons et de notre
+            À Bordeaux, notre maison imagine des réceptions qui ressemblent à
+            celles et ceux qui les célèbrent. Julie orchestre chaque détail,
+            José compose une cuisine sincère, inspirée des saisons et de notre
             terroir.
           </p>
           <p className="mt-4 font-heading text-xl italic text-primary">
-            &laquo; Recevoir, c&apos;est creer un souvenir autour d&apos;une table. &raquo;
+            &laquo; Recevoir, c&apos;est créer un souvenir autour d&apos;une table. &raquo;
           </p>
         </div>
       </div>
@@ -55,7 +55,7 @@ export function EquipeSection() {
           Notre engagement
         </p>
         <h2 className="mt-3 text-center font-heading text-4xl">
-          L&apos;exigence dans chaque detail
+          L&apos;exigence dans chaque détail
         </h2>
         <ul className="mt-12 grid gap-6 sm:grid-cols-3">
           {ENGAGEMENTS.map((item) => (

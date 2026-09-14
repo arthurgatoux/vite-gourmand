@@ -43,7 +43,7 @@ export function CreerEmployeForm() {
       className="flex flex-col gap-4 rounded-2xl border border-border bg-background p-6 shadow-card"
     >
       <div className="grid gap-2">
-        <Label htmlFor="email-employe">Email du futur employe</Label>
+        <Label htmlFor="email-employe">Email du futur employé</Label>
         <Input
           id="email-employe"
           type="email"
@@ -76,7 +76,7 @@ export function CreerEmployeForm() {
           </p>
         )}
         <p className="text-xs text-muted-foreground">
-          Ce mot de passe n&apos;est jamais envoye par email : communiquez-le directement a l&apos;employe (CDC).
+          Ce mot de passe n&apos;est jamais envoyé par email : communiquez-le directement à l&apos;employé (CDC).
         </p>
       </div>
       {erreurGlobale && (
@@ -86,11 +86,11 @@ export function CreerEmployeForm() {
       )}
       {succes && (
         <p className="text-sm text-green-600" role="status">
-          Compte employe cree.
+          Compte employé créé.
         </p>
       )}
       <Button type="submit" disabled={isPending}>
-        {isPending ? "Creation en cours..." : "Creer le compte"}
+        {isPending ? "Création en cours..." : "Créer le compte"}
       </Button>
     </form>
   );

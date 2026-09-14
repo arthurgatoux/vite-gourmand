@@ -52,24 +52,24 @@ export function ForgotPasswordForm({
       {success ? (
         <Card>
           <CardHeader>
-            <CardTitle className="text-2xl">Verifiez votre boite mail</CardTitle>
+            <CardTitle className="text-2xl">Vérifiez votre boîte mail</CardTitle>
             <CardDescription>
-              Instructions de reinitialisation envoyees
+              Instructions de réinitialisation envoyées
             </CardDescription>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground">
               Si un compte existe avec cette adresse, vous recevrez un email
-              contenant un lien pour reinitialiser votre mot de passe.
+              contenant un lien pour réinitialiser votre mot de passe.
             </p>
           </CardContent>
         </Card>
       ) : (
         <Card>
           <CardHeader>
-            <CardTitle className="text-2xl">Mot de passe oublie</CardTitle>
+            <CardTitle className="text-2xl">Mot de passe oublié</CardTitle>
             <CardDescription>
-              Saisissez votre email, nous vous enverrons un lien de reinitialisation
+              Saisissez votre email, nous vous enverrons un lien de réinitialisation
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -95,11 +95,11 @@ export function ForgotPasswordForm({
                 <Button type="submit" className="w-full" disabled={isLoading}>
                   {isLoading
                     ? "Envoi en cours..."
-                    : "Envoyer le lien de reinitialisation"}
+                    : "Envoyer le lien de réinitialisation"}
                 </Button>
               </div>
               <div className="mt-4 text-center text-sm">
-                Vous avez deja un compte ?{" "}
+                Vous avez déjà un compte ?{" "}
                 <Link href="/auth/login" className="underline underline-offset-4">
                   Se connecter
                 </Link>

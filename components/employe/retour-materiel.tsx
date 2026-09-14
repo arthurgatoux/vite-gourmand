@@ -43,7 +43,7 @@ export function RetourMateriel({ pret: pretInitial }: RetourMaterielProps) {
         {erreur && <p className="mt-1 text-destructive">{erreur}</p>}
       </div>
       <Button size="sm" variant="outline" disabled={isPending} onClick={handleRestitution}>
-        {isPending ? "Mise a jour..." : "Marquer comme restitué"}
+        {isPending ? "Mise à jour..." : "Marquer comme restitué"}
       </Button>
     </div>
   )

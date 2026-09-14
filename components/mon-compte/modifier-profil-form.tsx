@@ -56,7 +56,7 @@ export function ModifierProfilForm({ profil }: ModifierProfilFormProps) {
         <Label htmlFor="email">Email (identifiant de connexion)</Label>
         <Input id="email" type="email" value={profil.email} disabled readOnly />
         <p className="text-xs text-muted-foreground">
-          L&apos;email de connexion ne peut pas etre modifie depuis cet espace. Contactez-nous si besoin.
+          L&apos;email de connexion ne peut pas être modifié depuis cet espace. Contactez-nous si besoin.
         </p>
       </div>
 
@@ -74,7 +74,7 @@ export function ModifierProfilForm({ profil }: ModifierProfilFormProps) {
         </div>
 
         <div className="grid gap-2">
-          <Label htmlFor="prenom">Prenom</Label>
+          <Label htmlFor="prenom">Prénom</Label>
           <Input
             id="prenom"
             required
@@ -86,7 +86,7 @@ export function ModifierProfilForm({ profil }: ModifierProfilFormProps) {
         </div>
 
         <div className="grid gap-2">
-          <Label htmlFor="telephone">Telephone</Label>
+          <Label htmlFor="telephone">Téléphone</Label>
           <Input
             id="telephone"
             type="tel"
@@ -115,7 +115,7 @@ export function ModifierProfilForm({ profil }: ModifierProfilFormProps) {
 
       {succes && (
         <p className="text-sm text-green-600" role="status">
-          Vos informations ont bien ete mises a jour.
+          Vos informations ont bien été mises à jour.
         </p>
       )}
       {erreurGlobale && (

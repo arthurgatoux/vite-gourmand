@@ -62,7 +62,7 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl">Connexion</CardTitle>
-          <CardDescription>Accedez a votre espace Vite Gourmand</CardDescription>
+          <CardDescription>Accédez à votre espace Vite Gourmand</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleLogin} noValidate>
@@ -93,7 +93,7 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
                     href="/auth/forgot-password"
                     className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
                   >
-                    Mot de passe oublie ?
+                    Mot de passe oublié ?
                   </Link>
                 </div>
                 <Input
@@ -124,7 +124,7 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
             <div className="mt-4 text-center text-sm">
               Vous n&apos;avez pas de compte ?{" "}
               <Link href="/auth/sign-up" className="underline underline-offset-4">
-                Creer un compte
+                Créer un compte
               </Link>
             </div>
           </form>

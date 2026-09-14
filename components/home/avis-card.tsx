@@ -5,7 +5,7 @@ function StarRating({ note }: { note: number }) {
   return (
     <div
       role="img"
-      aria-label={`Note : ${note} sur 5 etoiles`}
+      aria-label={`Note : ${note} sur 5 étoiles`}
       className="flex gap-0.5 text-accent"
     >
       {Array.from({ length: 5 }).map((_, index) => (

@@ -44,12 +44,12 @@ export async function creerCommande(
 ): Promise<CommandeActionResult> {
   const profil = await getCurrentProfile();
   if (!profil) {
-    return { success: false, error: "Vous devez etre connecte pour commander." };
+    return { success: false, error: "Vous devez être connecté pour commander." };
   }
 
   const validationZod = schemaCreerCommande.safeParse(donnees);
   if (!validationZod.success) {
-    return { success: false, error: "Donnees de commande invalides." };
+    return { success: false, error: "Données de commande invalides." };
   }
 
   const supabase = await createClient();
@@ -91,7 +91,7 @@ export async function creerCommande(
     if (joursAvantPrestation < delaiMinimum) {
       return {
         success: false,
-        error: `Ce menu doit etre commande au moins ${delaiMinimum} jour(s) avant la date de prestation.`,
+        error: `Ce menu doit être commandé au moins ${delaiMinimum} jour(s) avant la date de prestation.`,
       };
     }
   }
@@ -115,7 +115,7 @@ export async function creerCommande(
     .single();
 
   if (erreurCommande || !commande) {
-    return { success: false, error: "Erreur lors de la creation de la commande : " + (erreurCommande?.message ?? "erreur inconnue") };
+    return { success: false, error: "Erreur lors de la création de la commande : " + (erreurCommande?.message ?? "erreur inconnue") };
   }
 
   revalidatePath("/mon-compte/commandes");
@@ -128,12 +128,12 @@ export async function modifierCommandeUtilisateur(
 ): Promise<ModifierCommandeResult> {
   const profil = await getCurrentProfile();
   if (!profil) {
-    return { success: false, error: "Vous devez etre connecte pour modifier une commande." };
+    return { success: false, error: "Vous devez être connecté pour modifier une commande." };
   }
 
   const validationZod = schemaDonneesCommande.safeParse(donnees);
   if (!validationZod.success) {
-    return { success: false, error: "Donnees de commande invalides." };
+    return { success: false, error: "Données de commande invalides." };
   }
 
   const supabase = await createClient();
@@ -151,7 +151,7 @@ export async function modifierCommandeUtilisateur(
     return { success: false, error: "Cette commande ne vous appartient pas." };
   }
   if (commande.statut_courant !== "en_attente") {
-    return { success: false, error: "Cette commande ne peut plus etre modifiee." };
+    return { success: false, error: "Cette commande ne peut plus être modifiée." };
   }
 
   const menu = Array.isArray(commande.menus) ? commande.menus[0] : commande.menus;
@@ -184,7 +184,7 @@ export async function annulerCommandeUtilisateur(
 ): Promise<ModifierCommandeResult> {
   const profil = await getCurrentProfile();
   if (!profil) {
-    return { success: false, error: "Vous devez etre connecte pour annuler une commande." };
+    return { success: false, error: "Vous devez être connecté pour annuler une commande." };
   }
 
   const supabase = await createClient();
@@ -202,7 +202,7 @@ export async function annulerCommandeUtilisateur(
     return { success: false, error: "Cette commande ne vous appartient pas." };
   }
   if (commande.statut_courant !== "en_attente") {
-    return { success: false, error: "Cette commande ne peut plus etre annulee." };
+    return { success: false, error: "Cette commande ne peut plus être annulée." };
   }
 
   const { error: erreurMaj } = await supabase

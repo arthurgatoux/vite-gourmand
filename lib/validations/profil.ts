@@ -19,12 +19,12 @@ export function validerModificationProfil(
     erreurs.nom = "Le nom est obligatoire.";
   }
   if (!donnees.prenom.trim()) {
-    erreurs.prenom = "Le prenom est obligatoire.";
+    erreurs.prenom = "Le prénom est obligatoire.";
   }
   if (!donnees.telephone.trim()) {
-    erreurs.telephone = "Le numero de GSM est obligatoire.";
+    erreurs.telephone = "Le numéro de GSM est obligatoire.";
   } else if (!REGEX_TELEPHONE.test(donnees.telephone.trim())) {
-    erreurs.telephone = "Numero de telephone invalide (format francais attendu).";
+    erreurs.telephone = "Numéro de téléphone invalide (format français attendu).";
   }
   if (!donnees.adressePostale.trim()) {
     erreurs.adressePostale = "L'adresse postale est obligatoire.";

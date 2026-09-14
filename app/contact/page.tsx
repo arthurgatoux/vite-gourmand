@@ -1,9 +1,9 @@
 import { ContactForm } from "@/components/contact/contact-form";
 
 export const metadata = {
-  title: "Contact - Vite Gourmand",
+  title: "Contact — Vite Gourmand",
   description:
-    "Une question, un evenement a organiser ? Contactez Julie et Jose de Vite Gourmand.",
+    "Une question, un événement à organiser ? Contactez Julie et José de Vite Gourmand.",
 };
 
 export default function ContactPage() {
@@ -18,7 +18,7 @@ export default function ContactPage() {
         </h1>
         <p className="mx-auto mt-4 max-w-xl text-muted-foreground">
           Que ce soit pour un renseignement sur nos menus ou l&apos;organisation
-          de votre evenement, Julie et Jose vous repondent rapidement.
+          de votre événement, Julie et José vous répondent rapidement.
         </p>
       </div>
       <ContactForm />

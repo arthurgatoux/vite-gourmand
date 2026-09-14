@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ThemeSwitcher } from "@/components/theme-switcher";
 import { LogoutButton } from "@/components/logout-button";
 import { getCurrentProfile } from "@/lib/supabase/get-current-profile";
 import { cn } from "@/lib/utils";
@@ -13,7 +12,7 @@ const NAV_LINKS = [
 
 function espaceLink(role: "utilisateur" | "employe" | "administrateur") {
   if (role === "administrateur") return { href: "/admin", label: "Espace administrateur" };
-  if (role === "employe") return { href: "/employe", label: "Espace employe" };
+  if (role === "employe") return { href: "/employe", label: "Espace employé" };
   return { href: "/mon-compte", label: "Mon espace" };
 }
 
@@ -50,7 +49,6 @@ export async function Header() {
           </ul>
         </nav>
         <div className="flex items-center gap-3">
-          <ThemeSwitcher />
           {profil ? (
             <>
               <Button asChild size="sm" variant="secondary">
@@ -69,7 +67,7 @@ export async function Header() {
                 variant="outline"
                 className="border-primary-foreground/40 bg-transparent text-primary-foreground hover:bg-primary-foreground/10"
               >
-                <Link href="/auth/sign-up">Creer un compte</Link>
+                <Link href="/auth/sign-up">Créer un compte</Link>
               </Button>
             </>
           )}

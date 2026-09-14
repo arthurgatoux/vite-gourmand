@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 
 export const metadata = {
   title: 'Mon espace - Vite Gourmand',
-  description: 'Gerez vos commandes et vos informations personnelles.',
+  description: 'Gérez vos commandes et vos informations personnelles.',
 }
 
 export default async function MonComptePage() {

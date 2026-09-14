@@ -32,15 +32,15 @@ export function MenuCard({ menu }: { menu: MenuCatalogue }) {
 
         <div className="mt-auto flex items-center justify-between pt-2">
           <p className="font-bold text-primary">
-            A partir de {menu.prix_base} &euro;
+            À partir de {menu.prix_base} &euro;
           </p>
           <p className="text-sm font-medium text-muted-foreground">
-            Des {menu.nb_personnes_min} pers.
+            Dès {menu.nb_personnes_min} pers.
           </p>
         </div>
 
         <Button asChild className="w-full">
-          <Link href={`/menus/${menu.id}`}>Voir le detail</Link>
+          <Link href={`/menus/${menu.id}`}>Voir le détail</Link>
         </Button>
       </div>
     </li>

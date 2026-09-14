@@ -28,7 +28,7 @@ export function ComptesEmployesListe({ comptes: comptesInitiaux }: ComptesEmploy
   }
 
   if (comptes.length === 0) {
-    return <p className="text-sm text-muted-foreground">Aucun compte employe pour le moment.</p>;
+    return <p className="text-sm text-muted-foreground">Aucun compte employé pour le moment.</p>;
   }
 
   return (
@@ -52,7 +52,7 @@ export function ComptesEmployesListe({ comptes: comptesInitiaux }: ComptesEmploy
             </div>
             <div className="flex items-center gap-3">
               <Badge variant={c.compteActif ? "default" : "outline"}>
-                {c.compteActif ? "Actif" : "Desactive"}
+                {c.compteActif ? "Actif" : "Désactivé"}
               </Badge>
               <Button
                 size="sm"
@@ -60,7 +60,7 @@ export function ComptesEmployesListe({ comptes: comptesInitiaux }: ComptesEmploy
                 disabled={isPending}
                 onClick={() => handleToggle(c.id, !c.compteActif)}
               >
-                {c.compteActif ? "Desactiver" : "Reactiver"}
+                {c.compteActif ? "Désactiver" : "Réactiver"}
               </Button>
             </div>
           </li>

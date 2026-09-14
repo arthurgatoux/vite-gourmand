@@ -15,7 +15,7 @@ export async function AvisSection() {
           Vos mots comptent
         </p>
         <h2 id="avis-heading" className="mt-3 text-center font-heading text-4xl">
-          Ils nous ont confie leur evenement
+          Ils nous ont confié leur événement
         </h2>
         <ul className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {avis.map((item) => (

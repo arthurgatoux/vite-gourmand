@@ -17,13 +17,13 @@ export default function Page() {
                 Merci pour votre inscription !
               </CardTitle>
               <CardDescription>
-                Verifiez votre boite mail pour confirmer votre compte
+                Vérifiez votre boîte mail pour confirmer votre compte
               </CardDescription>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground">
-                Votre compte a bien ete cree avec le role utilisateur. Verifiez
-                votre boite mail et cliquez sur le lien de confirmation avant
+                Votre compte a bien été créé avec le rôle utilisateur. Vérifiez
+                votre boîte mail et cliquez sur le lien de confirmation avant
                 de vous connecter.
               </p>
             </CardContent>

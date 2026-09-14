@@ -18,7 +18,7 @@ export function validerCreationEmploye(
 
   if (!REGEX_MOT_DE_PASSE.test(motDePasse)) {
     erreurs.motDePasse =
-      "10 caracteres minimum, avec une majuscule, une minuscule, un chiffre et un caractere special.";
+      "10 caractères minimum, avec une majuscule, une minuscule, un chiffre et un caractère spécial.";
   }
 
   return erreurs;

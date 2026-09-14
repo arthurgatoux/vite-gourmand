@@ -14,8 +14,8 @@ interface DeposerAvisProps {
 }
 
 const LABEL_STATUT_AVIS: Record<AvisExistant['statutValidation'], string> = {
-  en_attente: 'En attente de validation par notre \u00e9quipe',
-  valide: "Publi\u00e9 sur notre page d'accueil",
+  en_attente: 'En attente de validation par notre équipe',
+  valide: "Publié sur notre page d'accueil",
   refuse: 'Non retenu pour publication',
 }
 
@@ -34,7 +34,7 @@ export function DeposerAvis({ commandeId, avisExistant }: DeposerAvisProps) {
         <p
           className="mt-2 text-lg text-accent"
           role="img"
-          aria-label={`Note donn\u00e9e : ${avisExistant.note} sur 5`}
+          aria-label={`Note donnée : ${avisExistant.note} sur 5`}
         >
           {'\u2605'.repeat(avisExistant.note)}
           {'\u2606'.repeat(5 - avisExistant.note)}
@@ -77,7 +77,7 @@ export function DeposerAvis({ commandeId, avisExistant }: DeposerAvisProps) {
       <div>
         <h2 className="font-heading text-xl">Donnez votre avis</h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          Votre commande est termin\u00e9e. Dites-nous comment s'est pass\u00e9e votre prestation.
+          Votre commande est terminée. Dites-nous comment s'est passée votre prestation.
         </p>
       </div>
 

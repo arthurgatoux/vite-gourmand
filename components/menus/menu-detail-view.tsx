@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import type { MenuDetail } from "@/lib/supabase/menu-detail-queries";
 
 const LABEL_PLAT: Record<string, string> = {
-  entree: "Entree",
+  entree: "Entrée",
   plat: "Plat",
   dessert: "Dessert",
 };
@@ -103,7 +103,7 @@ export function MenuDetailView({ menu, estAuthentifie }: MenuDetailViewProps) {
                 <p className="mt-2 text-sm font-bold">{menu.conditions}</p>
                 {menu.delai_commande_jours !== null && (
                   <p className="mt-1 text-sm font-bold">
-                    Commande au minimum {menu.delai_commande_jours} jours a l&apos;avance
+                    Commande au minimum {menu.delai_commande_jours} jours à l&apos;avance
                   </p>
                 )}
               </div>
@@ -125,7 +125,7 @@ export function MenuDetailView({ menu, estAuthentifie }: MenuDetailViewProps) {
           Composition du menu
         </h2>
         <p className="mt-2 text-muted-foreground">
-          Trois temps imagines par notre chef, prepares dans notre atelier le jour du retrait.
+          Trois temps imaginés par notre chef, préparés dans notre atelier le jour du retrait.
         </p>
 
         <ul className="mt-8 grid gap-6 sm:grid-cols-3">

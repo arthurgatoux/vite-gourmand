@@ -17,7 +17,7 @@ export async function remplacerHoraires(lignes: LigneHoraire[]): Promise<Horaire
   const profil = await getCurrentProfile()
 
   if (!profil || (profil.role !== "employe" && profil.role !== "administrateur")) {
-    return { success: false, error: "Action reservee aux employes et administrateurs." }
+    return { success: false, error: "Action réservée aux employés et administrateurs." }
   }
 
   const lignesValides = lignes.filter(l => l.jourLibelle.trim() && l.plage.trim())
@@ -31,7 +31,7 @@ export async function remplacerHoraires(lignes: LigneHoraire[]): Promise<Horaire
   const { error: erreurSuppression } = await supabase.from("horaires").delete().not("id", "is", null)
 
   if (erreurSuppression) {
-    return { success: false, error: "Erreur lors de la mise a jour des horaires : " + erreurSuppression.message }
+    return { success: false, error: "Erreur lors de la mise à jour des horaires : " + erreurSuppression.message }
   }
 
   const { error: erreurInsertion } = await supabase.from("horaires").insert(

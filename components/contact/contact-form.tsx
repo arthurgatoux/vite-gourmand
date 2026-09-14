@@ -70,10 +70,10 @@ export function ContactForm({
         {...props}
         role="status"
       >
-        <h2 className="font-heading text-2xl">Message envoye !</h2>
+        <h2 className="font-heading text-2xl">Message envoyé !</h2>
         <p className="mt-3 text-muted-foreground">
-          Merci pour votre message. Julie et Jose reviendront vers vous par
-          email dans les meilleurs delais.
+          Merci pour votre message. Julie et José reviendront vers vous par
+          email dans les meilleurs délais.
         </p>
       </div>
     );
@@ -147,7 +147,7 @@ export function ContactForm({
           </p>
         )}
         <p className="text-xs text-muted-foreground">
-          Utilisee uniquement pour vous repondre, jamais partagee.
+          Utilisée uniquement pour vous répondre, jamais partagée.
         </p>
       </div>
 

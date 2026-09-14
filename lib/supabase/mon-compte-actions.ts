@@ -29,12 +29,12 @@ export async function modifierProfil(
 ): Promise<ProfilActionResult> {
   const profil = await getCurrentProfile();
   if (!profil) {
-    return { success: false, error: "Vous devez etre connecte pour modifier votre profil." };
+    return { success: false, error: "Vous devez être connecté pour modifier votre profil." };
   }
 
   const validationZod = schemaModificationProfil.safeParse(donnees);
   if (!validationZod.success) {
-    return { success: false, error: "Donnees de profil invalides." };
+    return { success: false, error: "Données de profil invalides." };
   }
 
   const erreurs = validerModificationProfil(donnees);
@@ -54,7 +54,7 @@ export async function modifierProfil(
     .eq("id", profil.id);
 
   if (error) {
-    return { success: false, error: "Erreur lors de la mise a jour : " + error.message };
+    return { success: false, error: "Erreur lors de la mise à jour : " + error.message };
   }
 
   revalidatePath("/mon-compte/profil");

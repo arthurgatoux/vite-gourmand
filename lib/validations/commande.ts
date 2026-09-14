@@ -34,7 +34,7 @@ export function validerCommande(
   if (!donnees.dateprestation) {
     erreurs.dateprestation = "La date de prestation est obligatoire.";
   } else if (new Date(donnees.dateprestation) < new Date(new Date().toDateString())) {
-    erreurs.dateprestation = "La date de prestation ne peut pas etre dans le passe.";
+    erreurs.dateprestation = "La date de prestation ne peut pas être dans le passé.";
   }
 
   if (!donnees.heureLivraison) {
@@ -46,7 +46,7 @@ export function validerCommande(
   }
 
   if (!donnees.estABordeaux && (!donnees.distanceKm || donnees.distanceKm <= 0)) {
-    erreurs.distanceKm = "Indiquez la distance depuis Bordeaux en kilometres.";
+    erreurs.distanceKm = "Indiquez la distance depuis Bordeaux en kilomètres.";
   }
 
   return erreurs;

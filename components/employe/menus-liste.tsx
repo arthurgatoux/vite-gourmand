@@ -18,7 +18,7 @@ export function MenusListe({ menus: menusInitiaux }: MenusListeProps) {
   const [isPending, startTransition] = useTransition()
 
   function handleSupprimer(id: string) {
-    if (!window.confirm("Supprimer definitivement ce menu ?")) return
+    if (!window.confirm("Supprimer définitivement ce menu ?")) return
     setErreur(null)
     startTransition(async () => {
       const resultat = await supprimerMenu(id)

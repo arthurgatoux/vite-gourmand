@@ -45,7 +45,7 @@ export function DashboardStats({ stats }: DashboardStatsProps) {
   }, [statsFiltrees, moisDebut, moisFin]);
 
   if (stats.length === 0) {
-    return <p className="text-sm text-muted-foreground">Aucune donnee statistique pour le moment.</p>;
+    return <p className="text-sm text-muted-foreground">Aucune donnée statistique pour le moment.</p>;
   }
 
   return (
@@ -105,7 +105,7 @@ export function DashboardStats({ stats }: DashboardStatsProps) {
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="mois-fin">Jusqu&apos;a</Label>
+              <Label htmlFor="mois-fin">Jusqu&apos;à</Label>
               <input
                 id="mois-fin"
                 type="month"

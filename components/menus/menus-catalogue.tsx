@@ -60,12 +60,12 @@ export function MenusCatalogueClient() {
       <div aria-live="polite" className="text-sm text-muted-foreground">
         {chargement
           ? "Chargement des menus..."
-          : `${menusFiltres.length} menu${menusFiltres.length > 1 ? "s" : ""} correspond${menusFiltres.length > 1 ? "ent" : ""} a vos criteres`}
+          : `${menusFiltres.length} menu${menusFiltres.length > 1 ? "s" : ""} correspond${menusFiltres.length > 1 ? "ent" : ""} à vos critères`}
       </div>
 
       {!chargement && menusFiltres.length === 0 ? (
         <p className="rounded-2xl border border-dashed border-border p-8 text-center text-muted-foreground">
-          Aucun menu ne correspond a ces criteres. Essayez d&apos;elargir votre recherche.
+          Aucun menu ne correspond à ces critères. Essayez d&apos;élargir votre recherche.
         </p>
       ) : (
         <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

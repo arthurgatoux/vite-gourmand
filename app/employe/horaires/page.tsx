@@ -4,7 +4,7 @@ import { EmployeNav } from '@/components/employe/employe-nav'
 
 export const metadata = {
   title: 'Gestion des horaires - Vite Gourmand',
-  description: "Modification des horaires d'ouverture affiches en pied de page.",
+  description: "Modification des horaires d'ouverture affichés en pied de page.",
 }
 
 export default async function EmployeHorairesPage() {

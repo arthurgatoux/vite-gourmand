@@ -24,7 +24,7 @@ export async function creerCompteEmploye(
 ): Promise<AdminActionResult> {
   const profil = await getCurrentProfile();
   if (!profil || profil.role !== "administrateur") {
-    return { success: false, error: "Action reservee aux administrateurs." };
+    return { success: false, error: "Action réservée aux administrateurs." };
   }
 
   const erreurs = validerCreationEmploye(email, motDePasse);
@@ -40,7 +40,7 @@ export async function creerCompteEmploye(
   });
 
   if (error || !data.user) {
-    return { success: false, error: error?.message ?? "Erreur lors de la creation du compte." };
+    return { success: false, error: error?.message ?? "Erreur lors de la création du compte." };
   }
 
   // Le trigger handle_new_user cree le profil avec le role "utilisateur" par
@@ -53,7 +53,7 @@ export async function creerCompteEmploye(
   });
 
   if (erreurRole) {
-    return { success: false, error: `Compte cree mais role non applique : ${erreurRole.message}` };
+    return { success: false, error: `Compte créé mais rôle non appliqué : ${erreurRole.message}` };
   }
 
   revalidatePath("/admin/employes");
@@ -70,7 +70,7 @@ export async function definirStatutCompteEmploye(
 ): Promise<AdminActionResult> {
   const profil = await getCurrentProfile();
   if (!profil || profil.role !== "administrateur") {
-    return { success: false, error: "Action reservee aux administrateurs." };
+    return { success: false, error: "Action réservée aux administrateurs." };
   }
 
   const supabase = await createClient();

@@ -24,7 +24,7 @@ export function HorairesForm({ horaires: horairesInitiaux }: HorairesFormProps) 
     startTransition(async () => {
       const resultat = await remplacerHoraires(lignes)
       if (resultat.success) {
-        setMessage({ type: "success", texte: "Horaires mis a jour." })
+        setMessage({ type: "success", texte: "Horaires mis à jour." })
       } else {
         setMessage({ type: "error", texte: resultat.error })
       }

@@ -26,15 +26,15 @@ export interface DonneesMenu {
 async function verifierRoleEmploye() {
   const profil = await getCurrentProfile()
   if (!profil || (profil.role !== "employe" && profil.role !== "administrateur")) {
-    return { autorise: false as const, error: "Action reservee aux employes et administrateurs." }
+    return { autorise: false as const, error: "Action réservée aux employés et administrateurs." }
   }
   return { autorise: true as const }
 }
 
 function validerDonneesMenu(donnees: DonneesMenu): string | null {
   if (!donnees.titre.trim()) return "Le titre du menu est obligatoire."
-  if (donnees.prixBase <= 0) return "Le prix doit etre superieur a 0."
-  if (donnees.nbPersonnesMin <= 0) return "Le nombre de personnes minimum doit etre superieur a 0."
+  if (donnees.prixBase <= 0) return "Le prix doit être supérieur à 0."
+  if (donnees.nbPersonnesMin <= 0) return "Le nombre de personnes minimum doit être supérieur à 0."
   return null
 }
 
@@ -64,7 +64,7 @@ export async function creerMenu(donnees: DonneesMenu): Promise<MenuActionResult>
     .single()
 
   if (erreurMenu || !menu) {
-    return { success: false, error: "Erreur lors de la creation du menu : " + erreurMenu?.message }
+    return { success: false, error: "Erreur lors de la création du menu : " + erreurMenu?.message }
   }
 
   await enregistrerAssociationsMenu(supabase, menu.id, donnees)
@@ -151,7 +151,7 @@ export async function supprimerMenu(menuId: string): Promise<MenuActionResult> {
     if (error.code === "23503") {
       return {
         success: false,
-        error: "Impossible de supprimer ce menu : des commandes y sont liees. Desactivez-le plutot (case 'Menu actif').",
+        error: "Impossible de supprimer ce menu : des commandes y sont liées. Désactivez-le plutôt (case 'Menu actif').",
       }
     }
     return { success: false, error: "Erreur lors de la suppression du menu : " + error.message }

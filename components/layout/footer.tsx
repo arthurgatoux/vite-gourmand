@@ -12,7 +12,7 @@ export async function Footer() {
         <div>
           <p className="font-heading text-2xl">Vite &amp; Gourmand</p>
           <p className="mt-3 text-sm text-background/80">
-            Traiteur evenementiel a Bordeaux depuis 25 ans.
+            Traiteur événementiel à Bordeaux depuis 25 ans.
           </p>
         </div>
 
@@ -60,7 +60,7 @@ export async function Footer() {
           <p>&copy; {new Date().getFullYear()} Vite &amp; Gourmand</p>
           <div className="flex gap-6">
             <Link href="/mentions-legales" className="underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm">
-              Mentions legales
+              Mentions légales
             </Link>
             <Link href="/cgv" className="underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm">
               CGV

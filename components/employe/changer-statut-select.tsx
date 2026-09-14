@@ -23,7 +23,7 @@ export function ChangerStatutSelect({ commandeId, statutActuel }: ChangerStatutS
   if (prochainsStatuts.length === 0) {
     return (
       <p className="text-xs text-muted-foreground">
-        Statut final, aucune mise a jour possible.
+        Statut final, aucune mise à jour possible.
       </p>
     )
   }
@@ -41,7 +41,7 @@ export function ChangerStatutSelect({ commandeId, statutActuel }: ChangerStatutS
         : await changerStatutCommande(commandeId, statutChoisi as StatutCommande)
 
       if (resultat.success) {
-        setMessage({ type: "success", texte: "Statut mis a jour." })
+        setMessage({ type: "success", texte: "Statut mis à jour." })
         setStatutChoisi("")
         setMotifAnnulation("")
         setModeContactClient("")
@@ -72,7 +72,7 @@ export function ChangerStatutSelect({ commandeId, statutActuel }: ChangerStatutS
           ))}
         </select>
         <Button size="sm" onClick={handleValider} disabled={!statutChoisi || annulationIncomplete || isPending}>
-          {isPending ? "Mise a jour..." : "Valider"}
+          {isPending ? "Mise à jour..." : "Valider"}
         </Button>
       </div>
 
@@ -80,7 +80,7 @@ export function ChangerStatutSelect({ commandeId, statutActuel }: ChangerStatutS
         <div className="grid gap-3 rounded-lg border-2 border-accent bg-secondary p-4 sm:grid-cols-2">
           <div className="grid gap-1.5 sm:col-span-2">
             <p className="text-xs font-bold text-foreground">
-              Le client doit etre contacte avant toute annulation (CDC).
+              Le client doit être contacté avant toute annulation (CDC).
             </p>
           </div>
           <div className="grid gap-1.5">

@@ -16,14 +16,14 @@ export function PresentationSection() {
           id="presentation-heading"
           className="font-heading text-5xl leading-tight sm:text-6xl lg:text-7xl"
         >
-          25 ans de savoir-faire culinaire au service de vos evenements
+          25 ans de savoir-faire culinaire au service de vos événements
         </h1>
         <p className="max-w-xl text-lg text-primary-foreground/90 sm:text-xl">
-          Receptions privees, mariages et evenements professionnels imagines
-          avec goût, generosite et precision.
+          Réceptions privées, mariages et événements professionnels imaginés
+          avec goût, générosité et précision.
         </p>
         <Button asChild size="lg" variant="secondary">
-          <Link href="/menus">Decouvrir nos menus</Link>
+          <Link href="/menus">Découvrir nos menus</Link>
         </Button>
       </div>
     </section>

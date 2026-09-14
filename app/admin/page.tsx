@@ -14,21 +14,21 @@ export default async function AdminPage() {
           Bienvenue{profil?.prenom ? `, ${profil.prenom}` : ""}
         </h1>
         <p className="mt-2 text-neutral-300">
-          Gestion des comptes employe et suivi de l&apos;activite de Vite Gourmand.
+          Gestion des comptes employé et suivi de l&apos;activité de Vite Gourmand.
         </p>
       </div>
       <div className="grid gap-6 md:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Comptes employe</CardTitle>
+            <CardTitle>Comptes employé</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <p className="text-sm text-muted-foreground">
-              Creer ou desactiver des comptes employe. La creation d&apos;un compte administrateur reste
+              Créer ou désactiver des comptes employé. La création d&apos;un compte administrateur reste
               impossible depuis l&apos;application.
             </p>
             <Button asChild size="sm" variant="secondary">
-              <Link href="/admin/employes">Gerer les comptes employe</Link>
+              <Link href="/admin/employes">Gérer les comptes employé</Link>
             </Button>
           </CardContent>
         </Card>
@@ -38,8 +38,8 @@ export default async function AdminPage() {
           </CardHeader>
           <CardContent className="space-y-3">
             <p className="text-sm text-muted-foreground">
-              Nombre de commandes par menu, chiffre d&apos;affaires et comparatif graphique, alimentes par la
-              base NoSQL dediee.
+              Nombre de commandes par menu, chiffre d&apos;affaires et comparatif graphique, alimentés par la
+              base NoSQL dédiée.
             </p>
             <Button asChild size="sm" variant="secondary">
               <Link href="/admin/dashboard">Voir les statistiques</Link>
@@ -49,7 +49,7 @@ export default async function AdminPage() {
       </div>
       <div className="mt-8">
         <Button asChild variant="outline" size="sm">
-          <Link href="/employe">Acceder a l&apos;espace employe</Link>
+          <Link href="/employe">Accéder à l&apos;espace employé</Link>
         </Button>
       </div>
     </div>

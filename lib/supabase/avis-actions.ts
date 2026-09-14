@@ -21,12 +21,12 @@ export async function deposerAvis(
 ): Promise<DeposerAvisResult> {
   const profil = await getCurrentProfile();
   if (!profil) {
-    return { success: false, error: "Vous devez etre connecte pour deposer un avis." };
+    return { success: false, error: "Vous devez être connecté pour déposer un avis." };
   }
 
   const validationZod = schemaDeposerAvis.safeParse(donnees);
   if (!validationZod.success) {
-    return { success: false, error: "Donnees d'avis invalides." };
+    return { success: false, error: "Données d'avis invalides." };
   }
 
   const erreurs = validerAvis(donnees);
@@ -49,7 +49,7 @@ export async function deposerAvis(
     return { success: false, error: "Cette commande ne vous appartient pas." };
   }
   if (commande.statut_courant !== "termine") {
-    return { success: false, error: "Vous ne pouvez deposer un avis que sur une commande terminee." };
+    return { success: false, error: "Vous ne pouvez déposer un avis que sur une commande terminée." };
   }
 
   const { error } = await supabase.from("avis").insert({

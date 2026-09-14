@@ -15,7 +15,7 @@ export async function changerStatutCommande(
 ): Promise<ChangerStatutResult> {
   const profil = await getCurrentProfile();
   if (!profil || (profil.role !== "employe" && profil.role !== "administrateur")) {
-    return { success: false, error: "Action reservee aux employes et administrateurs." };
+    return { success: false, error: "Action réservée aux employés et administrateurs." };
   }
 
   const supabase = await createClient();
@@ -34,7 +34,7 @@ export async function changerStatutCommande(
   if (!statutsAutorises.includes(nouveauStatut)) {
     return {
       success: false,
-      error: `Transition de ${statutActuel} vers ${nouveauStatut} non autorisee. Les statuts se suivent dans l'ordre du processus (ou passage a annule).`,
+      error: `Transition de ${statutActuel} vers ${nouveauStatut} non autorisée. Les statuts se suivent dans l'ordre du processus (ou passage à annulé).`,
     };
   }
 
@@ -45,7 +45,7 @@ export async function changerStatutCommande(
     if (!pret?.restitue) {
       return {
         success: false,
-        error: "Le materiel prete doit etre marque comme restitue avant de clore cette commande.",
+        error: "Le matériel prêté doit être marqué comme restitué avant de clore cette commande.",
       };
     }
   }
@@ -56,7 +56,7 @@ export async function changerStatutCommande(
     .eq("id", commandeId);
 
   if (erreurMaj) {
-    return { success: false, error: `Erreur lors de la mise a jour du statut : ${erreurMaj.message}` };
+    return { success: false, error: `Erreur lors de la mise à jour du statut : ${erreurMaj.message}` };
   }
 
   // CDC page 9 : synchronisation vers la base non relationnelle, uniquement
@@ -96,7 +96,7 @@ export async function annulerCommandeEmploye(
 ): Promise<ChangerStatutResult> {
   const profil = await getCurrentProfile();
   if (!profil || (profil.role !== "employe" && profil.role !== "administrateur")) {
-    return { success: false, error: "Action reservee aux employes et administrateurs." };
+    return { success: false, error: "Action réservée aux employés et administrateurs." };
   }
 
   if (!motifAnnulation.trim() || !modeContactClient.trim()) {
@@ -137,7 +137,7 @@ export async function validerAvis(
 ): Promise<ValiderAvisResult> {
   const profil = await getCurrentProfile();
   if (!profil || (profil.role !== "employe" && profil.role !== "administrateur")) {
-    return { success: false, error: "Action reservee aux employes et administrateurs." };
+    return { success: false, error: "Action réservée aux employés et administrateurs." };
   }
 
   const supabase = await createClient();
@@ -147,7 +147,7 @@ export async function validerAvis(
     .eq("id", avisId);
 
   if (error) {
-    return { success: false, error: `Erreur lors de la mise a jour de l'avis : ${error.message}` };
+    return { success: false, error: `Erreur lors de la mise à jour de l'avis : ${error.message}` };
   }
 
   revalidatePath("/employe");
@@ -164,7 +164,7 @@ export async function validerAvis(
 export async function marquerMaterielRestitue(pretMaterielId: string): Promise<ChangerStatutResult> {
   const profil = await getCurrentProfile();
   if (!profil || (profil.role !== "employe" && profil.role !== "administrateur")) {
-    return { success: false, error: "Action reservee aux employes et administrateurs." };
+    return { success: false, error: "Action réservée aux employés et administrateurs." };
   }
 
   const supabase = await createClient();
@@ -174,7 +174,7 @@ export async function marquerMaterielRestitue(pretMaterielId: string): Promise<C
     .eq("id", pretMaterielId);
 
   if (error) {
-    return { success: false, error: `Erreur lors de la mise a jour du pret de materiel : ${error.message}` };
+    return { success: false, error: `Erreur lors de la mise à jour du prêt de matériel : ${error.message}` };
   }
 
   revalidatePath("/employe");

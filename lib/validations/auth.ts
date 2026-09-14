@@ -34,7 +34,7 @@ const REGEX_TELEPHONE = /^(\+33|0)\s*[1-9](\s*[.\-]?\s*\d{2}){4}$/;
  */
 export function validerMotDePasse(motDePasse: string): string | null {
   if (motDePasse.length < 10) {
-    return "Le mot de passe doit contenir au moins 10 caracteres.";
+    return "Le mot de passe doit contenir au moins 10 caractères.";
   }
   if (!/[A-Z]/.test(motDePasse)) {
     return "Le mot de passe doit contenir au moins une majuscule.";
@@ -46,7 +46,7 @@ export function validerMotDePasse(motDePasse: string): string | null {
     return "Le mot de passe doit contenir au moins un chiffre.";
   }
   if (!/[^A-Za-z0-9]/.test(motDePasse)) {
-    return "Le mot de passe doit contenir au moins un caractere special.";
+    return "Le mot de passe doit contenir au moins un caractère spécial.";
   }
   return null;
 }
@@ -64,7 +64,7 @@ export function validerInscription(
     erreurs.nom = "Le nom est obligatoire.";
   }
   if (!donnees.prenom.trim()) {
-    erreurs.prenom = "Le prenom est obligatoire.";
+    erreurs.prenom = "Le prénom est obligatoire.";
   }
   if (!donnees.email.trim()) {
     erreurs.email = "L'adresse email est obligatoire.";
@@ -72,9 +72,9 @@ export function validerInscription(
     erreurs.email = "Adresse email invalide.";
   }
   if (!donnees.telephone.trim()) {
-    erreurs.telephone = "Le numero de GSM est obligatoire.";
+    erreurs.telephone = "Le numéro de GSM est obligatoire.";
   } else if (!REGEX_TELEPHONE.test(donnees.telephone.trim())) {
-    erreurs.telephone = "Numero de telephone invalide (format francais attendu).";
+    erreurs.telephone = "Numéro de téléphone invalide (format français attendu).";
   }
   if (!donnees.adressePostale.trim()) {
     erreurs.adressePostale = "L'adresse postale est obligatoire.";

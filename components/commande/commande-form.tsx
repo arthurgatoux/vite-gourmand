@@ -87,13 +87,13 @@ export function CommandeForm({ menu, profil }: CommandeFormProps) {
       className="flex flex-col gap-8 rounded-2xl border border-border bg-background p-8 shadow-card"
     >
       <fieldset className="grid gap-4 sm:grid-cols-2">
-        <legend className="mb-2 font-heading text-xl">Vos coordonnees</legend>
+        <legend className="mb-2 font-heading text-xl">Vos coordonnées</legend>
         <div className="grid gap-2">
           <Label htmlFor="nomClient">Nom</Label>
           <Input id="nomClient" required value={nomClient} onChange={(e) => setNomClient(e.target.value)} />
         </div>
         <div className="grid gap-2">
-          <Label htmlFor="prenomClient">Prenom</Label>
+          <Label htmlFor="prenomClient">Prénom</Label>
           <Input id="prenomClient" required value={prenomClient} onChange={(e) => setPrenomClient(e.target.value)} />
         </div>
         <div className="grid gap-2">
@@ -107,7 +107,7 @@ export function CommandeForm({ menu, profil }: CommandeFormProps) {
       </fieldset>
 
       <fieldset className="grid gap-4 sm:grid-cols-2">
-        <legend className="mb-2 font-heading text-xl">Votre evenement</legend>
+        <legend className="mb-2 font-heading text-xl">Votre événement</legend>
         <div className="grid gap-2 sm:col-span-2">
           <Label htmlFor="adressePrestation">Adresse de la prestation</Label>
           <Input
@@ -136,7 +136,7 @@ export function CommandeForm({ menu, profil }: CommandeFormProps) {
           )}
         </div>
         <div className="grid gap-2">
-          <Label htmlFor="heureLivraison">Heure de livraison souhaitee</Label>
+          <Label htmlFor="heureLivraison">Heure de livraison souhaitée</Label>
           <Input
             id="heureLivraison"
             type="time"
@@ -161,7 +161,7 @@ export function CommandeForm({ menu, profil }: CommandeFormProps) {
             onChange={(e) => setNbPersonnes(Number(e.target.value))}
           />
           <p className="text-xs text-muted-foreground">
-            Minimum {menu.nbPersonnesMin} personnes pour ce menu. A partir de {menu.nbPersonnesMin + 5} personnes une reduction de 10% s&apos;applique.
+            Minimum {menu.nbPersonnesMin} personnes pour ce menu. À partir de {menu.nbPersonnesMin + 5} personnes une réduction de 10% s&apos;applique.
           </p>
           {erreursChamps.nbPersonnes && (
             <p className="text-sm text-red-500">{erreursChamps.nbPersonnes}</p>
@@ -175,7 +175,7 @@ export function CommandeForm({ menu, profil }: CommandeFormProps) {
             onChange={(e) => setEstABordeaux(e.target.value === "bordeaux")}
             className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-base shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
           >
-            <option value="bordeaux">A Bordeaux (5,00 EUR de livraison)</option>
+            <option value="bordeaux">À Bordeaux (5,00 EUR de livraison)</option>
             <option value="hors-bordeaux">Hors Bordeaux (5,00 EUR + 0,59 EUR/km)</option>
           </select>
           {!estABordeaux && (
@@ -198,11 +198,11 @@ export function CommandeForm({ menu, profil }: CommandeFormProps) {
       </fieldset>
 
       <div className="rounded-xl border-2 border-accent bg-secondary p-6" aria-live="polite">
-        <h2 className="font-heading text-xl">Detail du prix (apercu)</h2>
+        <h2 className="font-heading text-xl">Détail du prix (aperçu)</h2>
         <dl className="mt-4 flex flex-col gap-2 text-sm">
           <div className="flex justify-between">
             <dt>
-              Menu ({nbPersonnes} pers.){apercu.reductionPourcentage > 0 ? ` (-${apercu.reductionPourcentage}% reduction)` : ""}
+              Menu ({nbPersonnes} pers.){apercu.reductionPourcentage > 0 ? ` (-${apercu.reductionPourcentage}% réduction)` : ""}
             </dt>
             <dd className="font-bold">{apercu.prixMenu.toFixed(2)} EUR</dd>
           </div>
@@ -216,7 +216,7 @@ export function CommandeForm({ menu, profil }: CommandeFormProps) {
           </div>
         </dl>
         <p className="mt-3 text-xs text-muted-foreground">
-          Ce montant est un apercu, le montant definitif est confirme par email apres validation de la commande.
+          Ce montant est un aperçu, le montant définitif est confirmé par email après validation de la commande.
         </p>
       </div>
 
