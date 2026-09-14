@@ -1,5 +1,12 @@
 import Link from "next/link";
+import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { LogoutButton } from "@/components/logout-button";
 import { getCurrentProfile } from "@/lib/supabase/get-current-profile";
 import { cn } from "@/lib/utils";
@@ -49,6 +56,32 @@ export async function Header() {
           </ul>
         </nav>
         <div className="flex items-center gap-3">
+          <div className="sm:hidden">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  aria-label="Ouvrir le menu de navigation"
+                  className="text-primary-foreground hover:bg-primary-foreground/10 focus-visible:outline-none focus-visible:ring focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-primary"
+                >
+                  <Menu className="h-6 w-6" aria-hidden="true" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                {NAV_LINKS.map((link, index) => (
+                  <DropdownMenuItem key={link.href} asChild>
+                    <Link
+                      href={link.href}
+                      className={index === 0 ? "font-bold" : undefined}
+                    >
+                      {link.label}
+                    </Link>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
           {profil ? (
             <>
               <Button asChild size="sm" variant="secondary">
