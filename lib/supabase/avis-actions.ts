@@ -38,23 +38,23 @@ export async function deposerAvis(
 
   const { data: commande, error: erreurLecture } = await supabase
     .from("commandes")
-    .select("utilisateurid, statutcourant")
+    .select("utilisateur_id, statut_courant")
     .eq("id", commandeId)
     .single();
 
   if (erreurLecture || !commande) {
     return { success: false, error: "Commande introuvable." };
   }
-  if (commande.utilisateurid !== profil.id) {
+  if (commande.utilisateur_id !== profil.id) {
     return { success: false, error: "Cette commande ne vous appartient pas." };
   }
-  if (commande.statutcourant !== "termine") {
+  if (commande.statut_courant !== "termine") {
     return { success: false, error: "Vous ne pouvez deposer un avis que sur une commande terminee." };
   }
 
   const { error } = await supabase.from("avis").insert({
-    commandeid: commandeId,
-    utilisateurid: profil.id,
+    commande_id: commandeId,
+    utilisateur_id: profil.id,
     note: donnees.note,
     commentaire: donnees.commentaire.trim(),
   });

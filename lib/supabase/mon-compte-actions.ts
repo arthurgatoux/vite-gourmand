@@ -49,7 +49,7 @@ export async function modifierProfil(
       nom: donnees.nom.trim(),
       prenom: donnees.prenom.trim(),
       telephone: donnees.telephone.trim(),
-      adressepostale: donnees.adressePostale.trim(),
+      adresse_postale: donnees.adressePostale.trim(),
     })
     .eq("id", profil.id);
 

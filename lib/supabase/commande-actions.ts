@@ -56,7 +56,7 @@ export async function creerCommande(
 
   const { data: menu, error: erreurMenu } = await supabase
     .from("menus")
-    .select("nbpersonnesmin, delaicommandejours")
+    .select("nb_personnes_min, delai_commande_jours")
     .eq("id", menuId)
     .eq("actif", true)
     .single();
@@ -74,13 +74,13 @@ export async function creerCommande(
       estABordeaux: donnees.estABordeaux,
       distanceKm: donnees.distanceKm,
     },
-    menu.nbpersonnesmin,
+    menu.nb_personnes_min,
   );
   if (Object.keys(erreurs).length > 0) {
     return { success: false, error: Object.values(erreurs)[0]! };
   }
 
-  const delaiMinimum = menu.delaicommandejours ?? 0;
+  const delaiMinimum = menu.delai_commande_jours ?? 0;
   if (delaiMinimum > 0) {
     const aujourdHui = new Date();
     aujourdHui.setHours(0, 0, 0, 0);
@@ -99,17 +99,17 @@ export async function creerCommande(
   const { data: commande, error: erreurCommande } = await supabase
     .from("commandes")
     .insert({
-      menuid: menuId,
-      utilisateurid: profil.id,
-      nomclient: donnees.nomClient.trim(),
-      prenomclient: donnees.prenomClient.trim(),
-      emailclient: donnees.emailClient.trim(),
-      telephoneclient: donnees.telephoneClient.trim(),
-      adresseprestation: donnees.adressePrestation.trim(),
-      dateprestation: donnees.dateprestation,
-      heurelivraison: donnees.heureLivraison,
-      nbpersonnes: donnees.nbPersonnes,
-      distancekm: donnees.estABordeaux ? 0 : donnees.distanceKm,
+      menu_id: menuId,
+      utilisateur_id: profil.id,
+      nom_client: donnees.nomClient.trim(),
+      prenom_client: donnees.prenomClient.trim(),
+      email_client: donnees.emailClient.trim(),
+      telephone_client: donnees.telephoneClient.trim(),
+      adresse_prestation: donnees.adressePrestation.trim(),
+      date_prestation: donnees.dateprestation,
+      heure_livraison: donnees.heureLivraison,
+      nb_personnes: donnees.nbPersonnes,
+      distance_km: donnees.estABordeaux ? 0 : donnees.distanceKm,
     })
     .select("id")
     .single();
@@ -140,22 +140,22 @@ export async function modifierCommandeUtilisateur(
 
   const { data: commande, error: erreurLecture } = await supabase
     .from("commandes")
-    .select("utilisateurid, statutcourant, menus(nbpersonnesmin)")
+    .select("utilisateur_id, statut_courant, menus(nb_personnes_min)")
     .eq("id", commandeId)
     .single();
 
   if (erreurLecture || !commande) {
     return { success: false, error: "Commande introuvable." };
   }
-  if (commande.utilisateurid !== profil.id) {
+  if (commande.utilisateur_id !== profil.id) {
     return { success: false, error: "Cette commande ne vous appartient pas." };
   }
-  if (commande.statutcourant !== "en_attente") {
+  if (commande.statut_courant !== "en_attente") {
     return { success: false, error: "Cette commande ne peut plus etre modifiee." };
   }
 
   const menu = Array.isArray(commande.menus) ? commande.menus[0] : commande.menus;
-  const erreurs = validerCommande(donnees, menu?.nbpersonnesmin ?? 1);
+  const erreurs = validerCommande(donnees, menu?.nb_personnes_min ?? 1);
   if (Object.keys(erreurs).length > 0) {
     return { success: false, error: Object.values(erreurs)[0]! };
   }
@@ -163,11 +163,11 @@ export async function modifierCommandeUtilisateur(
   const { error: erreurMaj } = await supabase
     .from("commandes")
     .update({
-      adresseprestation: donnees.adressePrestation.trim(),
-      dateprestation: donnees.dateprestation,
-      heurelivraison: donnees.heureLivraison,
-      nbpersonnes: donnees.nbPersonnes,
-      distancekm: donnees.estABordeaux ? 0 : donnees.distanceKm,
+      adresse_prestation: donnees.adressePrestation.trim(),
+      date_prestation: donnees.dateprestation,
+      heure_livraison: donnees.heureLivraison,
+      nb_personnes: donnees.nbPersonnes,
+      distance_km: donnees.estABordeaux ? 0 : donnees.distanceKm,
     })
     .eq("id", commandeId);
 
@@ -191,23 +191,23 @@ export async function annulerCommandeUtilisateur(
 
   const { data: commande, error: erreurLecture } = await supabase
     .from("commandes")
-    .select("utilisateurid, statutcourant")
+    .select("utilisateur_id, statut_courant")
     .eq("id", commandeId)
     .single();
 
   if (erreurLecture || !commande) {
     return { success: false, error: "Commande introuvable." };
   }
-  if (commande.utilisateurid !== profil.id) {
+  if (commande.utilisateur_id !== profil.id) {
     return { success: false, error: "Cette commande ne vous appartient pas." };
   }
-  if (commande.statutcourant !== "en_attente") {
+  if (commande.statut_courant !== "en_attente") {
     return { success: false, error: "Cette commande ne peut plus etre annulee." };
   }
 
   const { error: erreurMaj } = await supabase
     .from("commandes")
-    .update({ statutcourant: "annule" })
+    .update({ statut_courant: "annule" })
     .eq("id", commandeId);
 
   if (erreurMaj) {
