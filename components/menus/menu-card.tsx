@@ -6,11 +6,22 @@ import type { MenuCatalogue } from "@/lib/supabase/menus-queries";
 export function MenuCard({ menu }: { menu: MenuCatalogue }) {
   return (
     <li className="flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-background shadow-card">
-      <div
-        className="aspect-[16/9] w-full bg-gradient-to-br from-primary to-accent"
-        role="img"
-        aria-label={`Photo du menu ${menu.titre}`}
-      />
+      <div className="aspect-[16/9] w-full overflow-hidden bg-gradient-to-br from-primary to-accent">
+        {menu.imageprincipale ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={menu.imageprincipale}
+            alt={`Photo du menu ${menu.titre}`}
+            className="h-full w-full object-cover"
+          />
+        ) : (
+          <div
+            className="h-full w-full"
+            role="img"
+            aria-label={`Aucune photo disponible pour le menu ${menu.titre}`}
+          />
+        )}
+      </div>
       <div className="flex flex-1 flex-col gap-3 p-6">
         <div className="flex flex-wrap gap-2">
           {menu.theme && (
@@ -24,21 +35,14 @@ export function MenuCard({ menu }: { menu: MenuCatalogue }) {
             </Badge>
           ))}
         </div>
-
         <h3 className="font-heading text-2xl">{menu.titre}</h3>
         {menu.description && (
           <p className="line-clamp-2 text-sm text-muted-foreground">{menu.description}</p>
         )}
-
         <div className="mt-auto flex items-center justify-between pt-2">
-          <p className="font-bold text-primary">
-            À partir de {menu.prix_base} &euro;
-          </p>
-          <p className="text-sm font-medium text-muted-foreground">
-            Dès {menu.nb_personnes_min} pers.
-          </p>
+          <p className="font-bold text-primary">à partir de {menu.prixbase}€</p>
+          <p className="text-sm font-medium text-muted-foreground">Dès {menu.nbpersonnesmin} pers.</p>
         </div>
-
         <Button asChild className="w-full">
           <Link href={`/menus/${menu.id}`}>Voir le détail</Link>
         </Button>
