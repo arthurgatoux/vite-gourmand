@@ -7,10 +7,10 @@ export function MenuCard({ menu }: { menu: MenuCatalogue }) {
   return (
     <li className="flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-background shadow-card">
       <div className="aspect-[16/9] w-full overflow-hidden bg-gradient-to-br from-primary to-accent">
-        {menu.imageprincipale ? (
+        {menu.image_principale ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            src={menu.imageprincipale}
+            src={menu.image_principale}
             alt={`Photo du menu ${menu.titre}`}
             className="h-full w-full object-cover"
           />
@@ -40,8 +40,8 @@ export function MenuCard({ menu }: { menu: MenuCatalogue }) {
           <p className="line-clamp-2 text-sm text-muted-foreground">{menu.description}</p>
         )}
         <div className="mt-auto flex items-center justify-between pt-2">
-          <p className="font-bold text-primary">à partir de {menu.prixbase}€</p>
-          <p className="text-sm font-medium text-muted-foreground">Dès {menu.nbpersonnesmin} pers.</p>
+          <p className="font-bold text-primary">à partir de {menu.prix_base}€</p>
+          <p className="text-sm font-medium text-muted-foreground">Dès {menu.nb_personnes_min} pers.</p>
         </div>
         <Button asChild className="w-full">
           <Link href={`/menus/${menu.id}`}>Voir le détail</Link>
