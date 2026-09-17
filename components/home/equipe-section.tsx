@@ -1,4 +1,5 @@
 import { Wheat, GlassWater, PenLine } from "lucide-react";
+import Image from "next/image";
 
 const ENGAGEMENTS = [
   {
@@ -25,11 +26,15 @@ export function EquipeSection() {
   return (
     <section aria-labelledby="equipe-heading" className="w-full bg-background py-24">
       <div className="mx-auto grid max-w-6xl gap-16 px-6 lg:grid-cols-2 lg:items-center">
-        <div
-          className="aspect-[4/3] w-full rounded-3xl bg-gradient-to-br from-primary to-accent"
-          role="img"
-          aria-label="Julie et José, fondateurs de Vite et Gourmand"
-        />
+        <div className="relative aspect-[4/3] w-full overflow-hidden rounded-3xl bg-gradient-to-br from-primary to-accent">
+          <Image
+            src="/images/julie-jose-vite-gourmand.webp"
+            alt="Julie et José, fondateurs de Vite et Gourmand, dans leur cuisine"
+            fill
+            sizes="(min-width: 1024px) 50vw, 100vw"
+            className="object-cover"
+          />
+        </div>
 
         <div>
           <p className="text-sm font-bold uppercase tracking-widest text-primary">
