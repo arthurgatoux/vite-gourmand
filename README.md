@@ -2,6 +2,8 @@
 
 Application web de commande de menus événementiels pour l'entreprise traiteur bordelaise Vite & Gourmand (Julie et José). Projet réalisé dans le cadre de l'ECF TP Développeur Web et Web Mobile (Studi) par Arthur Gatoux, FastDev.
 
+**Application déployée :** [vite-gourmand-ten.vercel.app](https://vite-gourmand-ten.vercel.app/)
+
 ## Sommaire
 
 - [Présentation](#présentation)
@@ -30,6 +32,7 @@ L'application permet de présenter les menus événementiels de l'entreprise, de
 | Base relationnelle | Supabase (PostgreSQL managé, région `eu-west-1`) | SQL standard (exigence explicite du CDC concernant les fichiers SQL de création et d'intégration), Row Level Security native, hébergement en zone UE pour le RGPD |
 | Authentification | Supabase Auth | Gestion sécurisée du hachage de mot de passe, tokens de confirmation et de réinitialisation par mail, intégration native avec RLS |
 | Base NoSQL | MongoDB Atlas | Exigée par le CDC pour le dashboard admin (nombre de commandes par menu, chiffre d'affaires) |
+| Email transactionnel | Resend (domaine vérifié `mail.gatouxweb.com`) | Envoi des emails exigés par le CDC (bienvenue, confirmation de commande, demande d'avis, retour de matériel) depuis une adresse expéditrice propre au domaine, plutôt que l'adresse de test `onboarding@resend.dev` |
 | Déploiement | Vercel | Intégration continue avec GitHub, adapté à Next.js |
 | Gestion de projet | Notion | Backlog (50 user stories réparties en épics E1 à E10) et documentation |
 | Versioning | GitHub (dépôt public `vite-gourmand`) | Exigence du CDC : dépôt public, workflow `main`, `develop` et `feature/*` |
@@ -41,9 +44,9 @@ Navigateur
    │
    ▼
 Next.js (Vercel) : Server Actions et Route Handlers
-   │                          │
-   ▼                          ▼
-Supabase Auth          Supabase PostgreSQL (RLS)
+   │                          │                    │
+   ▼                          ▼                    ▼
+Supabase Auth          Supabase PostgreSQL (RLS)   Resend (emails transactionnels)
    │                          │
    └──────────► Synchronisation applicative ─────► MongoDB Atlas (statistiques agrégées)
 ```
@@ -55,7 +58,8 @@ La synchronisation vers MongoDB est déclenchée applicativement (Server Action)
 - Node.js version 20 ou supérieure
 - npm (ou pnpm, ou yarn)
 - Un compte Supabase avec accès au projet `vite-gourmand`
-- Un cluster MongoDB Atlas (base `vite-gourmand-stats`)
+- Un cluster MongoDB Atlas (base `vite_gourmand_stats`)
+- Un compte Resend avec un domaine d'envoi vérifié (DKIM, SPF, DMARC), nécessaire pour l'envoi réel des emails transactionnels au-delà de l'adresse propriétaire de la clé API
 - Git
 
 ## Installation locale
@@ -80,12 +84,12 @@ Renseigner dans `.env.local` :
 ```env
 NEXT_PUBLIC_SUPABASE_URL=<url du projet Supabase>
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=<clé publishable ou anon>
-SUPABASE_SECRET_KEY=<clé secrète Supabase, usage serveur uniquement, jamais exposée au client>
+SUPABASE_SERVICE_ROLE_KEY=<clé de rôle de service Supabase, usage serveur uniquement, jamais exposée au client>
 MONGODB_URI=<chaîne de connexion MongoDB Atlas>
-MONGODB_DB_NAME=vite-gourmand-stats
+RESEND_API_KEY=<clé API Resend>
 ```
 
-Les clés Supabase sont disponibles dans « Project Settings > API » du dashboard Supabase du projet `vite-gourmand`.
+Les clés Supabase sont disponibles dans « Project Settings > API » du dashboard Supabase du projet `vite-gourmand`. Le nom de la base MongoDB (`vite_gourmand_stats`) est codé en dur côté client Mongo (`lib/mongodb/client.ts`) et non lu depuis une variable d'environnement dédiée.
 
 ## Base de données relationnelle (Supabase / PostgreSQL)
 
@@ -147,7 +151,7 @@ git push origin feature/nom-de-la-fonctionnalite
 
 ## Rôles et parcours de test
 
-Les identifiants de test par rôle (visiteur, utilisateur, employé, administrateur) seront fournis dans le manuel d'utilisation en PDF livré en fin de projet.
+Les identifiants de test par rôle (visiteur, utilisateur, employé, administrateur) seront fournis dans le manuel d'utilisation en PDF livré en fin de projet, plutôt que dans ce README public.
 
 ## Documentation et gestion de projet
 
@@ -155,4 +159,45 @@ La gestion de projet et la documentation technique complète (choix technologiqu
 
 ## Déploiement
 
-Déploiement cible : Vercel, connecté au dépôt GitHub sur la branche `main`. La procédure détaillée sera documentée dans `docs/` lors de la phase de déploiement.
+L'application est déployée sur Vercel (projet `vite-gourmand`), avec intégration continue Git sur ce dépôt GitHub public : chaque merge sur `main` redéclenche un déploiement de production.
+
+**URL de production :** [https://vite-gourmand-ten.vercel.app/](https://vite-gourmand-ten.vercel.app/)
+
+### Procédure suivie
+
+Le déploiement initial a été réalisé via la CLI Vercel plutôt que via une intégration automatique dashboard, afin de garder le contrôle sur le lien du projet existant et les variables d'environnement :
+
+```bash
+vercel login
+vercel link          # lien vers le projet Vercel existant "vite-gourmand"
+vercel --prod
+```
+
+### Variables d'environnement de production
+
+Ajoutées via `vercel env add <NOM> production` (saisie interactive) :
+
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `MONGODB_URI`
+
+Ces 4 variables sont les seules effectivement lues par le code (`lib/mongodb/client.ts`, `lib/supabase/admin.ts`). `VERCEL_OIDC_TOKEN` est généré et renouvelé automatiquement par Vercel, sans intervention manuelle.
+
+### Domaine d'envoi Resend
+
+Le domaine `mail.gatouxweb.com` a été ajouté et vérifié sur Resend (enregistrements DKIM, SPF et DMARC ajoutés chez le registrar DNS). Sans cette vérification, Resend limite l'envoi à la seule adresse du compte propriétaire de la clé API, ce qui aurait bloqué silencieusement tous les emails transactionnels exigés par le CDC pour un client réel. L'adresse expéditrice a été basculée de `onboarding@resend.dev` vers `commandes@mail.gatouxweb.com` dans les fonctions trigger concernées (migration `supabase/migrations/017_domaine_resend_verifie.sql`).
+
+### Corrections nécessaires au build de production
+
+Trois ajustements de typage/configuration ont été nécessaires pour que `npm run build` (utilisé par Vercel) passe, ces erreurs n'apparaissant pas en développement local (`next dev`) car Turbopack n'exécute pas le type-check complet effectué par `next build` :
+
+- Typage des props du formulaire de contact harmonisé pour être compatible avec un rendu conditionnel `<div>` / `<form>`.
+- Typage explicite de la collection MongoDB des statistiques de menus, pour que le driver reconnaisse correctement les champs manipulés par les opérations d'agrégation.
+- Retrait de l'option expérimentale Next.js de rendu par défaut, incompatible avec les zones entièrement authentifiées de l'application (espaces employé, admin et compte utilisateur), sans impact sur la logique métier ni sur les en-têtes de sécurité HTTP.
+
+Aucune de ces corrections n'a modifié la logique métier ou les règles de gestion du CDC.
+
+### Mise en production
+
+La branche `develop`, testée, a été fusionnée dans `main` conformément au workflow Git imposé par le CDC. Une vérification fonctionnelle complète a ensuite été effectuée directement sur l'URL de production.
