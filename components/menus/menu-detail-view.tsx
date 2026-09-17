@@ -61,7 +61,7 @@ export function MenuDetailView({ menu, estAuthentifie }: MenuDetailViewProps) {
               <p className="text-lg font-bold">{menu.nb_personnes_min} personnes</p>
             </div>
             <div className="text-right">
-              <p className="text-sm text-muted-foreground">Pour {menu.nb_personnes_min} personnes</p>
+              <p className="text-sm text-muted-foreground">Par personne</p>
               <p className="font-heading text-3xl text-primary">{menu.prix_base}€</p>
             </div>
           </div>

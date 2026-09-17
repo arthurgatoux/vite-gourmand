@@ -146,7 +146,7 @@ export function MenuForm({ menu, plats, regimes }: MenuFormProps) {
           <Input id="theme" placeholder="noel, paques, classique..." value={theme} onChange={(e) => setTheme(e.target.value)} />
         </div>
         <div className="grid gap-2">
-          <Label htmlFor="prixBase">Prix pour le nombre minimum de personnes</Label>
+          <Label htmlFor="prixBase">Prix par personne</Label>
           <Input id="prixBase" type="number" min={0} step={0.01} required value={prixBase} onChange={(e) => setPrixBase(Number(e.target.value))} />
         </div>
         <div className="grid gap-2">
