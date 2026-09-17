@@ -2,6 +2,7 @@ import Link from "next/link";
 import { TriangleAlert } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { GalerieImages } from "@/components/menus/galerie-images";
 import type { MenuDetail } from "@/lib/supabase/menu-detail-queries";
 
 const LABEL_PLAT: Record<string, string> = {
@@ -35,41 +36,7 @@ export function MenuDetailView({ menu, estAuthentifie }: MenuDetailViewProps) {
       </nav>
 
       <div className="grid gap-14 lg:grid-cols-2">
-        <div className="flex flex-col gap-4">
-          <div className="aspect-[4/3] w-full overflow-hidden rounded-3xl bg-gradient-to-br from-primary to-accent">
-            {menu.images.length > 0 ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={menu.images[0]}
-                alt={`Photo principale du menu ${menu.titre}`}
-                className="h-full w-full object-cover"
-              />
-            ) : (
-              <div
-                className="h-full w-full"
-                role="img"
-                aria-label={`Aucune photo disponible pour le menu ${menu.titre}`}
-              />
-            )}
-          </div>
-          {menu.images.length > 1 && (
-            <ul className="flex gap-3">
-              {menu.images.slice(1).map((url, index) => (
-                <li
-                  key={url}
-                  className="h-20 flex-1 overflow-hidden rounded-xl border-2 border-border bg-secondary focus-within:border-primary"
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={url}
-                    alt={`Photo ${index + 2} du menu ${menu.titre}`}
-                    className="h-full w-full object-cover"
-                  />
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
+        <GalerieImages images={menu.images} titre={menu.titre} />
 
         <div className="flex flex-col gap-6">
           <div>
@@ -91,11 +58,11 @@ export function MenuDetailView({ menu, estAuthentifie }: MenuDetailViewProps) {
           <div className="flex items-center justify-between border-y border-border py-5">
             <div>
               <p className="text-sm text-muted-foreground">Minimum</p>
-              <p className="text-lg font-bold">{menu.nbpersonnesmin} personnes</p>
+              <p className="text-lg font-bold">{menu.nb_personnes_min} personnes</p>
             </div>
             <div className="text-right">
-              <p className="text-sm text-muted-foreground">Pour {menu.nbpersonnesmin} personnes</p>
-              <p className="font-heading text-3xl text-primary">{menu.prixbase}€</p>
+              <p className="text-sm text-muted-foreground">Pour {menu.nb_personnes_min} personnes</p>
+              <p className="font-heading text-3xl text-primary">{menu.prix_base}€</p>
             </div>
           </div>
 
@@ -109,20 +76,20 @@ export function MenuDetailView({ menu, estAuthentifie }: MenuDetailViewProps) {
               <div>
                 <p className="font-extrabold">Conditions de ce menu</p>
                 <p className="mt-2 text-sm font-bold">{menu.conditions}</p>
-                {menu.delaicommandejours !== null && (
+                {menu.delai_commande_jours !== null && (
                   <p className="mt-1 text-sm font-bold">
-                    Commande au minimum {menu.delaicommandejours} jours à l&apos;avance
+                    Commande au minimum {menu.delai_commande_jours} jours à l&apos;avance
                   </p>
                 )}
               </div>
             </div>
           )}
 
-          {menu.stockdisponible !== null && (
+          {menu.stock_disponible !== null && (
             <p className="text-sm text-muted-foreground">
-              {menu.stockdisponible > 0
-                ? `Il reste ${menu.stockdisponible} commande${menu.stockdisponible > 1 ? "s" : ""} possible${
-                    menu.stockdisponible > 1 ? "s" : ""
+              {menu.stock_disponible > 0
+                ? `Il reste ${menu.stock_disponible} commande${menu.stock_disponible > 1 ? "s" : ""} possible${
+                    menu.stock_disponible > 1 ? "s" : ""
                   } pour ce menu.`
                 : "Ce menu n'est plus disponible pour le moment."}
             </p>
@@ -141,7 +108,7 @@ export function MenuDetailView({ menu, estAuthentifie }: MenuDetailViewProps) {
           {menu.plats.map((plat) => (
             <li key={plat.nom} className="rounded-2xl border border-border bg-background p-7 shadow-card">
               <p className="text-xs font-bold uppercase tracking-widest text-primary">
-                {LABEL_PLAT[plat.typeplat] ?? plat.typeplat}
+                {LABEL_PLAT[plat.type_plat] ?? plat.type_plat}
               </p>
               <h3 className="mt-2 font-heading text-xl">{plat.nom}</h3>
               {plat.description && (
