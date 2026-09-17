@@ -14,7 +14,7 @@ import {
 export function ContactForm({
   className,
   ...props
-}: Omit<React.ComponentPropsWithoutRef<"div">, "onSubmit">) {
+}: React.HTMLAttributes<HTMLElement>) {
   const [titre, setTitre] = useState("");
   const [description, setDescription] = useState("");
   const [email, setEmail] = useState("");

@@ -13,9 +13,9 @@ interface StatsMenuDocument {
   menu_id: string;
   titre_menu: string;
   theme: string | null;
-  nb_commandes_total: number;
+  nb_commandes_total: number | Int32;
   chiffre_affaires_total: number;
-  historique_mensuel: { mois: string; nb_commandes: number; chiffre_affaires: number }[];
+  historique_mensuel: { mois: string; nb_commandes: number | Int32; chiffre_affaires: number }[];
   derniere_maj: Date;
 }
 
