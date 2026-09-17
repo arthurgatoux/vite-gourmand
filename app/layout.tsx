@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
-import { Geist } from "next/font/google";
+import { Inter, Playfair_Display } from "next/font/google";
 import { ThemeProvider } from "next-themes";
+import { Header } from "@/components/layout/header";
+import { Footer } from "@/components/layout/footer";
+import { Suspense } from "react";
 import "./globals.css";
 
 const defaultUrl = process.env.VERCEL_URL
@@ -9,14 +12,22 @@ const defaultUrl = process.env.VERCEL_URL
 
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "Next.js and Supabase Starter Kit",
-  description: "The fastest way to build apps with Next.js and Supabase",
+  title: "Vite & Gourmand — Traiteur événementiel à Bordeaux",
+  description:
+    "Vite & Gourmand, traiteur événementiel bordelais depuis 25 ans : découvrez nos menus et commandez en ligne.",
 };
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
+  variable: "--font-inter",
   display: "swap",
   subsets: ["latin"],
+});
+
+const playfairDisplay = Playfair_Display({
+  variable: "--font-playfair",
+  display: "swap",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
 });
 
 export default function RootLayout({
@@ -25,15 +36,29 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${geistSans.className} antialiased`}>
+    <html lang="fr" suppressHydrationWarning>
+      <body
+        className={`${inter.variable} ${playfairDisplay.variable} flex min-h-screen flex-col font-sans antialiased`}
+      >
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
-          enableSystem
+          defaultTheme="light"
+          enableSystem={false}
           disableTransitionOnChange
         >
-          {children}
+          <a
+            href="#contenu-principal"
+            className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:m-2 focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground"
+          >
+            Aller au contenu principal
+          </a>
+          <Suspense fallback={null}>
+            <Header />
+          </Suspense>
+          <div id="contenu-principal" className="flex flex-1 flex-col">
+            {children}
+          </div>
+          <Footer />
         </ThemeProvider>
       </body>
     </html>
