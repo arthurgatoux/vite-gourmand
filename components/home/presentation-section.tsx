@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 import Link from "next/link";
 
 export function PresentationSection() {
@@ -7,6 +8,15 @@ export function PresentationSection() {
       aria-labelledby="presentation-heading"
       className="relative w-full overflow-hidden bg-primary py-24 text-primary-foreground"
     >
+      <Image
+        src="/images/hero-img-vite-gourmand.webp"
+        alt=""
+        aria-hidden="true"
+        fill
+        priority
+        sizes="100vw"
+        className="object-cover"
+      />
       <div className="absolute inset-0 bg-gradient-to-b from-foreground/70 via-foreground/40 to-transparent" aria-hidden="true" />
       <div className="relative mx-auto flex max-w-3xl flex-col items-center gap-6 px-6 text-center">
         <p className="text-sm font-bold uppercase tracking-widest text-accent">
