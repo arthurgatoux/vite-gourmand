@@ -23,6 +23,26 @@ export interface CommandeEmploye {
   pretMateriel: PretMaterielCommande | null
 }
 
+type CommandeEmployeRow = {
+  id: string
+  nom_client: string
+  prenom_client: string
+  email_client: string
+  date_prestation: string
+  nb_personnes: number
+  prix_total: number
+  statut_courant: StatutCommande
+  date_creation: string
+  materiel_prete: boolean
+  menus: { titre: string }
+  prets_materiel: {
+    id: string
+    date_limite_retour: string
+    restitue: boolean
+    frais_appliques: boolean
+  }[]
+}
+
 /**
  * Recupere toutes les commandes (tous clients) pour l'espace employe/admin.
  * Protege par la policy RLS `utilisateur_lit_ses_commandes` (clause est_employe_ou_admin()).
@@ -53,6 +73,7 @@ export async function getCommandesEmploye(): Promise<CommandeEmploye[]> {
       )
     `)
     .order('date_creation', { ascending: false })
+    .returns<CommandeEmployeRow[]>()
 
   if (error || !data) {
     console.error('Erreur lors de la récupération des commandes (employé):', error?.message)
@@ -96,6 +117,18 @@ export interface AvisEmploye {
   dateCreation: string
 }
 
+type AvisEnAttenteRow = {
+  id: string
+  note: number
+  commentaire: string | null
+  date_creation: string
+  commandes: {
+    nom_client: string
+    prenom_client: string
+    menus: { titre: string }
+  }
+}
+
 /**
  * Recupere les avis en attente de moderation pour l'espace employe/admin.
  * Protege par la policy RLS `employe_admin_lisent_tous_avis` (clause est_employe_ou_admin()).
@@ -119,6 +152,7 @@ export async function getAvisEnAttente(): Promise<AvisEmploye[]> {
     `)
     .eq('statut_validation', 'en_attente')
     .order('date_creation', { ascending: true })
+    .returns<AvisEnAttenteRow[]>()
 
   if (error || !data) {
     console.error('Erreur lors de la récupération des avis (employé):', error?.message)

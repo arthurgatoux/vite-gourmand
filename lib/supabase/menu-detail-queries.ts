@@ -22,6 +22,28 @@ export type MenuDetail = {
   plats: PlatDetail[];
 };
 
+type MenuDetailRow = {
+  id: string;
+  titre: string;
+  description: string | null;
+  theme: string | null;
+  prix_base: number;
+  nb_personnes_min: number;
+  conditions: string | null;
+  delai_commande_jours: number | null;
+  stock_disponible: number | null;
+  menu_images: { url: string; ordre: number }[];
+  menu_regime: { regimes: { nom: string } | null }[];
+  menu_plat: {
+    plats: {
+      nom: string;
+      description: string | null;
+      type_plat: PlatDetail["type_plat"];
+      plat_allergene: { allergenes: { nom: string } | null }[];
+    } | null;
+  }[];
+};
+
 const ORDRE_PLAT: Record<string, number> = { entree: 0, plat: 1, dessert: 2 };
 
 export async function getMenuDetail(id: string): Promise<MenuDetail | null> {
@@ -39,7 +61,8 @@ export async function getMenuDetail(id: string): Promise<MenuDetail | null> {
     )
     .eq("id", id)
     .eq("actif", true)
-    .single();
+    .single()
+    .returns<MenuDetailRow>();
 
   if (error || !data) {
     return null;
