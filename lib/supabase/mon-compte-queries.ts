@@ -43,6 +43,17 @@ export interface CommandeDetail extends CommandeHistorique {
   }>
 }
 
+type CommandeUtilisateurRow = {
+  id: string
+  date_prestation: string
+  heure_livraison: string
+  nb_personnes: number
+  prix_total: number
+  statut_courant: StatutCommande
+  date_creation: string
+  menus: { titre: string; theme: string | null }
+}
+
 /**
  * Récupère l'historique des commandes du profil connecté.
  * Utilise la policy RLS `utilisateur_lit_ses_commandes` (security_invoker).
@@ -66,6 +77,7 @@ export async function getCommandesUtilisateur(userId: string): Promise<CommandeH
     `)
     .eq('utilisateur_id', userId)
     .order('date_creation', { ascending: false })
+    .returns<CommandeUtilisateurRow[]>()
 
   if (error || !data) {
     console.error('Erreur lors de la récupération des commandes:', error?.message)
@@ -83,6 +95,27 @@ export async function getCommandesUtilisateur(userId: string): Promise<CommandeH
     statutCourant: cmd.statut_courant,
     dateCreation: cmd.date_creation,
   }))
+}
+
+type CommandeDetailRow = {
+  id: string
+  nom_client: string
+  prenom_client: string
+  email_client: string
+  telephone_client: string | null
+  adresse_prestation: string
+  date_prestation: string
+  heure_livraison: string
+  nb_personnes: number
+  distance_km: number | null
+  prix_menu: number
+  prix_livraison: number
+  reduction_pourcentage: number
+  prix_total: number
+  materiel_prete: boolean
+  statut_courant: StatutCommande
+  date_creation: string
+  menus: { titre: string; theme: string | null; prix_base: number; nb_personnes_min: number }
 }
 
 /**
@@ -126,6 +159,7 @@ export async function getCommandeDetail(
     .eq('id', commandeId)
     .eq('utilisateur_id', userId)
     .single()
+    .returns<CommandeDetailRow>()
 
   if (erreurCmd || !commande) {
     console.error('Erreur ou commande non trouvée:', erreurCmd?.message)

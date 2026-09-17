@@ -9,28 +9,16 @@ interface SynchroniserStatsMenuParams {
   dateTerminee: Date;
 }
 
-/**
- * CDC page 9 : le dashboard administrateur (nombre de commandes par menu,
- * chiffre d'affaires filtrable par menu et par duree) doit venir d'une base
- * non relationnelle. Cette fonction alimente cette base.
- *
- * Regles issues de docs/NoSQL-MongoDB-ViteGourmand.md (section 5) :
- * - declenchee uniquement au passage d'une commande au statut "termine"
- *   (jamais a la lecture du dashboard, jamais de recalcul a la volee) ;
- * - algorithme idempotent en deux temps : increment sur le mois courant
- *   s'il existe deja dans l'historique, sinon upsert avec ajout du mois ;
- * - la double ecriture Postgres puis Mongo n'est pas transactionnelle : en
- *   cas d'echec Mongo, on logue sans jamais bloquer la commande cote
- *   client. La donnee metier Postgres prime toujours sur la donnee
- *   statistique Mongo (point de vigilance documente dans le dossier RGPD).
- *
- * Note technique : le validateur Atlas de stats_menus est strict et exige
- * bsonType "int" pour nb_commandes_total et historique_mensuel.nb_commandes
- * (cf. mongodb/init/001_create_stats_menus.js). Le driver Node serialise un
- * nombre JS ordinaire en double par defaut : les increments sur ces deux
- * champs sont donc explicitement types en Int32 pour rester conformes au
- * schema, sinon la commande $inc echoue avec "Document failed validation".
- */
+interface StatsMenuDocument {
+  menu_id: string;
+  titre_menu: string;
+  theme: string | null;
+  nb_commandes_total: number;
+  chiffre_affaires_total: number;
+  historique_mensuel: { mois: string; nb_commandes: number; chiffre_affaires: number }[];
+  derniere_maj: Date;
+}
+
 export async function synchroniserStatsMenu({
   menuId,
   titreMenu,
@@ -40,7 +28,7 @@ export async function synchroniserStatsMenu({
 }: SynchroniserStatsMenuParams): Promise<void> {
   try {
     const client = await getMongoClient();
-    const collection = client.db("vite_gourmand_stats").collection("stats_menus");
+    const collection = client.db("vite_gourmand_stats").collection<StatsMenuDocument>("stats_menus");
 
     const moisCourant = `${dateTerminee.getUTCFullYear()}-${String(dateTerminee.getUTCMonth() + 1).padStart(2, "0")}`;
 

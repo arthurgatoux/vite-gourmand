@@ -14,7 +14,7 @@ import {
 export function ContactForm({
   className,
   ...props
-}: React.ComponentPropsWithoutRef<"div">) {
+}: Omit<React.ComponentPropsWithoutRef<"div">, "onSubmit">) {
   const [titre, setTitre] = useState("");
   const [description, setDescription] = useState("");
   const [email, setEmail] = useState("");
