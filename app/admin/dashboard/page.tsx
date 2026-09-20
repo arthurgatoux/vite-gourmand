@@ -5,15 +5,16 @@ export const metadata = {
   title: "Dashboard statistique - Vite Gourmand",
 };
 
+// Données issues de la base non relationnelle (MongoDB Atlas), alimentée automatiquement à chaque commande terminée.
 export default async function AdminDashboardPage() {
   const stats = await listerStatsMenus();
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8">
       <p className="text-sm font-bold uppercase tracking-widest text-primary">Espace administrateur</p>
-      <h1 className="mt-1 font-heading text-3xl">Dashboard statistique</h1>
+      <h1 className="mt-1 font-heading text-3xl">Dashboard</h1>
       <p className="mt-2 text-sm text-muted-foreground">
-        Données issues de la base non relationnelle (MongoDB Atlas), alimentée automatiquement à chaque
+        Suivez en direct où en est votre entreprise, alimentée automatiquement à chaque
         commande terminée.
       </p>
       <div className="mt-8">
