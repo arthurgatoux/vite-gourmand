@@ -76,7 +76,7 @@ export function CreerEmployeForm() {
           </p>
         )}
         <p className="text-xs text-muted-foreground">
-          Ce mot de passe n&apos;est jamais envoyé par email : communiquez-le directement à l&apos;employé (CDC).
+          Ce mot de passe n&apos;est jamais envoyé par email : communiquez-le directement à l&apos;employé.
         </p>
       </div>
       {erreurGlobale && (
