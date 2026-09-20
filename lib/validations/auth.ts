@@ -25,13 +25,10 @@ export interface DonneesConnexion {
 }
 
 const REGEX_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-// Format francais tolerant : 0X XX XX XX XX ou +33 X XX XX XX XX (espaces/points optionnels).
+// Format téléphone FR (tolérant sur les espaces et tirets)
 const REGEX_TELEPHONE = /^(\+33|0)\s*[1-9](\s*[.\-]?\s*\d{2}){4}$/;
 
-/**
- * Regle CDC : "Mot de passe securise 10 caractere minimum constitue au minima
- * d'un caractere special, une majuscule, une minuscule, un chiffre."
- */
+// Validation de la robustesse du mot de passe (min 10 car, maj/min/chiffre/spécial)
 export function validerMotDePasse(motDePasse: string): string | null {
   if (motDePasse.length < 10) {
     return "Le mot de passe doit contenir au moins 10 caractères.";
@@ -51,10 +48,7 @@ export function validerMotDePasse(motDePasse: string): string | null {
   return null;
 }
 
-/**
- * Validation stricte du formulaire d'inscription visiteur (CDC : nom, prenom,
- * numero de GSM, adresse mail et postale, mot de passe securise).
- */
+// Validation des champs à la création de compte
 export function validerInscription(
   donnees: DonneesInscription
 ): Partial<Record<ChampInscription, string>> {
@@ -91,10 +85,7 @@ export function validerInscription(
   return erreurs;
 }
 
-/**
- * Validation du formulaire de connexion (CDC : username = email, suivi du
- * mot de passe).
- */
+// Validation simple des identifiants de connexion
 export function validerConnexion(
   donnees: DonneesConnexion
 ): Partial<Record<ChampConnexion, string>> {

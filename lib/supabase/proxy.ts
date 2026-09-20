@@ -2,16 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { hasEnvVars } from "../utils";
 
-// Routes accessibles sans authentification, conformement au CDC :
-// - "/" : page d'accueil (p.3)
-// - "/menus" : vue globale et vue detaillee des menus, "disponible pour les
-//   personnes non authentifiees comme authentifie" (CDC p.5)
-// - "/contact" : formulaire de contact accessible depuis le menu applicatif (CDC p.9)
-// - "/mentions-legales", "/cgv" : liens obligatoires en pied de page (CDC p.4)
-// - "/auth", "/login" : pages de connexion / inscription elles-memes
-// Toutes les autres routes (/commande, /mon-compte, /employe, /admin) restent
-// protegees : un visiteur non authentifie y est redirige vers /auth/login,
-// conformement au CDC p.6 ("redirection vers connexion" avant commande).
+// Routes publiques accessibles sans être connecté (accueil, catalogue, contact, legal, auth)
 const PUBLIC_PATH_PREFIXES = [
   "/menus",
   "/contact",
@@ -33,13 +24,11 @@ export async function updateSession(request: NextRequest) {
     request,
   });
 
-  // If the env vars are not set, skip proxy check. You can remove this once you setup the project.
   if (!hasEnvVars) {
     return supabaseResponse;
   }
 
-  // With Fluid compute, don't put this client in a global environment
-  // variable. Always create a new one on each request.
+  // Création du client serveur Supabase pour rafraîchir les cookies de session
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
@@ -63,34 +52,16 @@ export async function updateSession(request: NextRequest) {
     },
   );
 
-  // Do not run code between createServerClient and
-  // supabase.auth.getClaims(). A simple mistake could make it very hard to debug
-  // issues with users being randomly logged out.
-
-  // IMPORTANT: If you remove getClaims() and you use server-side rendering
-  // with the Supabase client, your users may be randomly logged out.
+  // Vérification de la session active
   const { data } = await supabase.auth.getClaims();
   const user = data?.claims;
 
+  // Redirection vers le login si tentative d'accès à une route protégée sans être authentifié
   if (!isPublicPath(request.nextUrl.pathname) && !user) {
-    // no user, potentiellement rediriger vers la page de connexion
     const url = request.nextUrl.clone();
     url.pathname = "/auth/login";
     return NextResponse.redirect(url);
   }
-
-  // IMPORTANT: You *must* return the supabaseResponse object as it is. If you're
-  // creating a new response object with NextResponse.next() make sure to:
-  // 1. Pass the request in it, like so:
-  //    const myNewResponse = NextResponse.next({ request })
-  // 2. Copy over the cookies, like so:
-  //    myNewResponse.cookies.setAll(supabaseResponse.cookies.getAll())
-  // 3. Change the myNewResponse object to fit your needs, but avoid changing
-  //    the cookies!
-  // 4. Finally:
-  //    return myNewResponse
-  // If this is not done, you may be causing the browser and server to go out
-  // of sync and terminate the user's session prematurely!
 
   return supabaseResponse;
 }

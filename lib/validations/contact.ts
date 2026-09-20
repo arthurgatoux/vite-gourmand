@@ -8,10 +8,7 @@ export interface DonneesContact {
 
 const REGEX_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-/**
- * Validation du formulaire de contact (CDC : "un formulaire qui va lui demander
- * un titre, une description ainsi que son mail afin qu'il puisse obtenir une reponse").
- */
+// Validation du formulaire de contact (titre, message et email valide)
 export function validerContact(
   donnees: DonneesContact
 ): Partial<Record<ChampContact, string>> {

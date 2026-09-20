@@ -38,8 +38,7 @@ export async function changerStatutCommande(
     };
   }
 
-  // CDC page 8 : une commande n'est terminee que si elle a ete livree sans
-  // pret de materiel, ou si le materiel prete a bien ete restitue.
+  // Garde-fou : si du matériel a été prêté, la commande ne peut pas être clôturée tant qu'il n'est pas rendu
   if (nouveauStatut === "termine" && commande.materiel_prete) {
     const pret = Array.isArray(commande.prets_materiel) ? commande.prets_materiel[0] : commande.prets_materiel;
     if (!pret?.restitue) {
@@ -59,8 +58,7 @@ export async function changerStatutCommande(
     return { success: false, error: `Erreur lors de la mise à jour du statut : ${erreurMaj.message}` };
   }
 
-  // CDC page 9 : synchronisation vers la base non relationnelle, uniquement
-  // au passage en "termine" (docs/NoSQL-MongoDB-ViteGourmand.md, section 5).
+  // Synchro NoSQL : mise à jour des statistiques de vente dans MongoDB Atlas quand la commande est terminée
   if (nouveauStatut === "termine") {
     const menu = Array.isArray(commande.menus) ? commande.menus[0] : commande.menus;
     if (menu) {
@@ -80,15 +78,7 @@ export async function changerStatutCommande(
   return { success: true };
 }
 
-/**
- * Ticket E6 : Annulation de commande avec motif et mode de contact.
- * CDC page 8 : l'employe ne peut pas annuler une commande sans avoir
- * contacte le client au prealable (GSM ou mail) et sans preciser un motif.
- * La validation obligatoire est faite ici cote serveur (jamais confiance au
- * seul controle cote client), puis relayee a la fonction RPC
- * employe_annuler_commande qui ecrit motif + mode de contact dans la meme
- * transaction que le changement de statut (cf. migration 010).
- */
+// Annulation d'une commande côté employé avec obligation de préciser le motif et le moyen de contact
 export async function annulerCommandeEmploye(
   commandeId: string,
   motifAnnulation: string,
@@ -126,11 +116,7 @@ export async function annulerCommandeEmploye(
 
 export type ValiderAvisResult = { success: true } | { success: false; error: string };
 
-/**
- * Ticket E6 : Validation ou refus des avis clients.
- * CDC : un avis n'est visible sur la page d'accueil que si statut_validation
- * passe a "valide" (RG6, deja documente dans MCD-ViteGourmand.md).
- */
+// Validation ou refus d'un avis client (seuls les avis validés apparaissent sur la home)
 export async function validerAvis(
   avisId: string,
   decision: "valide" | "refuse",
@@ -156,11 +142,7 @@ export async function validerAvis(
   return { success: true };
 }
 
-/**
- * Ticket E6 : Gestion du retour de materiel prete avec notification J+10.
- * Une fois restitue, la commande peut etre cloturee (garde-fou dans
- * changerStatutCommande ci-dessus).
- */
+// Marquer le matériel prêté comme restitué par le client
 export async function marquerMaterielRestitue(pretMaterielId: string): Promise<ChangerStatutResult> {
   const profil = await getCurrentProfile();
   if (!profil || (profil.role !== "employe" && profil.role !== "administrateur")) {

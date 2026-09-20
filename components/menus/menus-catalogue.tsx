@@ -23,6 +23,7 @@ export function MenusCatalogueClient() {
   const [chargement, setChargement] = useState(true);
   const [filtres, setFiltres] = useState<FiltresMenu>(FILTRES_INITIAUX);
 
+  // Chargement asynchrone des menus du catalogue
   useEffect(() => {
     let annule = false;
     getMenusCatalogue().then((data) => {
@@ -36,6 +37,7 @@ export function MenusCatalogueClient() {
     };
   }, []);
 
+  // Génération dynamique de la liste des thèmes et régimes pour alimenter les sélecteurs
   const themes = useMemo(
     () => Array.from(new Set(menus.map((m) => m.theme).filter((t): t is string => Boolean(t)))),
     [menus]
@@ -45,6 +47,7 @@ export function MenusCatalogueClient() {
     [menus]
   );
 
+  // Application en direct des filtres de recherche (prix, personnes, régimes)
   const menusFiltres = useMemo(() => filtrerMenus(menus, filtres), [menus, filtres]);
 
   return (

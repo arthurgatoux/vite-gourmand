@@ -31,8 +31,7 @@ export function ForgotPasswordForm({
     setError(null);
 
     try {
-      // CDC : "il pourra le reinitialiser via un bouton prevu a cet effet :
-      // un lien par mail lui sera envoye afin de l'inviter a le reinitialiser".
+      // Envoi du mail de réinitialisation avec le callback vers notre page update-password
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${window.location.origin}/auth/update-password`,
       });

@@ -17,6 +17,7 @@ const NAV_LINKS = [
   { href: "/contact", label: "Contact" },
 ];
 
+// Redirection dynamique de l'espace utilisateur selon son rôle (Client, Employé ou Admin)
 function espaceLink(role: "utilisateur" | "employe" | "administrateur") {
   if (role === "administrateur") return { href: "/admin", label: "Espace administrateur" };
   if (role === "employe") return { href: "/employe", label: "Espace employé" };
@@ -24,6 +25,7 @@ function espaceLink(role: "utilisateur" | "employe" | "administrateur") {
 }
 
 export async function Header() {
+  // Récupère la session pour adapter les boutons de connexion / espace
   const profil = await getCurrentProfile();
 
   return (

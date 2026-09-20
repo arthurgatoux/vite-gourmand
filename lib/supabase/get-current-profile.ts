@@ -7,16 +7,8 @@ export type CurrentProfile = {
   compte_actif: boolean;
 } | null;
 
-/**
- * Recupere le profil applicatif (role + statut du compte inclus) de
- * l'utilisateur connecte. Retourne null si personne n'est authentifie.
- * Utilise cote serveur uniquement (Server Component / layout), jamais
- * expose au client tel quel.
- *
- * compte_actif est indispensable aux guards des espaces employe/admin :
- * sans lui, un compte desactive par l'administrateur (CDC page 9) ne
- * pourrait jamais etre effectivement bloque.
- */
+// Récupère le profil de l'utilisateur connecté (serveur uniquement)
+// Inclut rôle et compte_actif pour vérifier si le compte est actif avant d'accéder aux routes protégées
 export async function getCurrentProfile(): Promise<CurrentProfile> {
   const supabase = await createClient();
   const { data: claims } = await supabase.auth.getClaims();

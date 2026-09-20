@@ -7,7 +7,7 @@ export interface DonneesProfil {
   adressePostale: string;
 }
 
-// Meme regle que a l'inscription (lib/validations/auth.ts) : format francais tolerant.
+// Validation format numéro FR (ex: 06 12 34 56 78 ou +33612345678)
 const REGEX_TELEPHONE = /^(\+33|0)\s*[1-9](\s*[.\-]?\s*\d{2}){4}$/;
 
 export function validerModificationProfil(

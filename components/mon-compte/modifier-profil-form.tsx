@@ -34,8 +34,7 @@ export function ModifierProfilForm({ profil }: ModifierProfilFormProps) {
     if (Object.keys(erreurs).length > 0) return;
 
     setIsLoading(true);
-    // Deplace vers une Server Action (lib/supabase/mon-compte-actions.ts) :
-    // la validation n'etait appliquee que cote navigateur auparavant.
+    // Mise à jour du profil utilisateur via Server Action
     const resultat = await modifierProfil({ nom, prenom, telephone, adressePostale });
     if (resultat.success) {
       setSucces(true);

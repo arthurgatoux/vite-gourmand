@@ -9,16 +9,7 @@ export interface StatMenu {
   historiqueMensuel: { mois: string; nbCommandes: number; chiffreAffaires: number }[];
 }
 
-/**
- * CDC page 9 : "il doit pouvoir visualiser depuis son espace le nombre de
- * commande par menu et pouvoir les comparer entre eux via un graphique.
- * Les donnees doivent venir d'une base de donnees non relationnelle."
- *
- * Lecture pure MongoDB, aucune jointure vers Supabase : titre_menu et theme
- * sont deja denormalises dans le document (cf.
- * docs/NoSQL-MongoDB-ViteGourmand.md, section 2), exactement pour permettre
- * cet affichage direct sans requete croisee a chaque chargement du dashboard.
- */
+// Récupération des statistiques par menu depuis la collection NoSQL MongoDB
 export async function listerStatsMenus(): Promise<StatMenu[]> {
   const client = await getMongoClient();
   const collection = client.db("vite_gourmand_stats").collection("stats_menus");

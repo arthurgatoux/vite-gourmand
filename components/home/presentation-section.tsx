@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
 
+// Banner d'accueil avec fond d'écran et accroche principale
 export function PresentationSection() {
   return (
     <section

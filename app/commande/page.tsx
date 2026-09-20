@@ -19,14 +19,13 @@ export default async function CommandePage({ searchParams }: CommandePageProps) 
   const supabase = await createClient();
   const { data, error } = await supabase.auth.getClaims();
 
-  // CDC : "Si la personne est un visiteur (non authentifiee), il lui sera
-  // demande de se connecter ou de concevoir un compte avant d'acceder a la
-  // page de commande."
+  // Redirection vers le login si pas connecté (en conservant l'ID du menu dans l'URL)
   if (error || !data?.claims) {
     redirect(`/auth/login?redirect=/commande?menu=${menuId}`);
   }
 
   const userId = data.claims.sub as string;
+  // Fetch en parallèle du menu sélectionné et du profil utilisateur pour le préremplissage
   const [menu, profil] = await Promise.all([
     getMenuPourCommande(menuId),
     getProfilPourCommande(userId),

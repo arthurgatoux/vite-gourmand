@@ -19,6 +19,7 @@ export function CommandesFiltrees({ commandes }: CommandesFiltreesProps) {
   const [statutFiltre, setStatutFiltre] = useState<StatutCommande | 'tous'>('tous')
   const [recherche, setRecherche] = useState('')
 
+  // Filtrage combiné par statut et recherche textuelle (nom, prénom, email client)
   const commandesFiltrees = useMemo(() => {
     return commandes.filter(cmd => {
       const correspondStatut = statutFiltre === 'tous' || cmd.statutCourant === statutFiltre

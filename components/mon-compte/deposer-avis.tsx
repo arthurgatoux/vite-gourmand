@@ -56,9 +56,7 @@ export function DeposerAvis({ commandeId, avisExistant }: DeposerAvisProps) {
     if (Object.keys(erreurs).length > 0) return
 
     setIsLoading(true)
-    // Deplace vers une Server Action (lib/supabase/avis-actions.ts) : revalide
-    // la note (1-5) et le statut "termine" de la commande cote serveur,
-    // plutot que de laisser la seule policy RLS comme garde-fou.
+    // Enregistrement de l'avis client (vérification du statut 'terminée' côté serveur)
     const resultat = await deposerAvis(commandeId, { note, commentaire })
     if (resultat.success) {
       router.refresh()

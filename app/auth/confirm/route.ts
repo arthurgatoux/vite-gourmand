@@ -17,14 +17,14 @@ export async function GET(request: NextRequest) {
       token_hash,
     });
     if (!error) {
-      // redirect user to specified redirect URL or root of app
+      // Token valide : redirection vers la destination prévue (ou la racine par défaut)
       redirect(next);
     } else {
-      // redirect the user to an error page with some instructions
+      // Erreur lors de la vérification du token OTP
       redirect(`/auth/error?error=${error?.message}`);
     }
   }
 
-  // redirect the user to an error page with some instructions
+  // Requête incomplète (paramètres manquants dans la query)
   redirect(`/auth/error?error=No token hash or type`);
 }

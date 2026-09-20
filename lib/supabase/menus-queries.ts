@@ -22,12 +22,7 @@ export type FiltresMenu = {
   personnesMin: number | null;
 };
 
-/**
- * Recupere le catalogue via la vue menus_catalogue (RLS respectee,
- * security_invoker) et applique les filtres cote client. Utilise dans un
- * Client Component pour permettre une actualisation sans rechargement de
- * page, conformement a l'exigence du CDC.
- */
+// Charge le catalogue complet depuis la vue SQL menus_catalogue
 export async function getMenusCatalogue(): Promise<MenuCatalogue[]> {
   const supabase = createClient();
   const { data, error } = await supabase

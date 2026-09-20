@@ -49,9 +49,7 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
     const supabase = createClient();
     setIsLoading(true);
     try {
-      // A la creation du compte, le role est impose cote base de donnees
-      // (trigger handle_new_user), valeur par defaut "utilisateur" : aucune
-      // metadonnee envoyee ici ne peut fixer un autre role.
+      // Inscription utilisateur (le rôle 'utilisateur' est forcé côté Supabase via le trigger SQL)
       const { error } = await supabase.auth.signUp({
         email,
         password: motDePasse,
