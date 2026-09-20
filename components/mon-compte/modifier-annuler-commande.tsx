@@ -66,10 +66,7 @@ export function ModifierAnnulerCommande({ commande }: ModifierAnnulerCommandePro
     }
 
     setIsLoading(true);
-    // Deplace vers une Server Action (lib/supabase/commande-actions.ts) : le
-    // prix definitif reste recalcule cote serveur par le trigger Postgres
-    // calculer_prix_commande (CDC : "tout est modifiable, sauf le choix du
-    // menu").
+    // Modification de la commande via Server Action (recalcul auto du montant côté DB)
     const resultat = await modifierCommandeUtilisateur(commande.id, donnees);
     if (resultat.success) {
       setMode("lecture");

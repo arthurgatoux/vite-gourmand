@@ -4,7 +4,7 @@ import { randomUUID } from "crypto";
 import { createClient } from "@/lib/supabase/server";
 
 const BUCKET = "menu-images";
-const TAILLE_MAX_OCTETS = 3 * 1024 * 1024; // 3 Mo par image : evite de saturer le bucket Storage.
+const TAILLE_MAX_OCTETS = 3 * 1024 * 1024; // Limit à 3 Mo par image
 const TYPES_AUTORISES: Record<string, string> = {
   "image/jpeg": "jpg",
   "image/png": "png",
@@ -13,7 +13,7 @@ const TYPES_AUTORISES: Record<string, string> = {
 const SIGNATURES: Record<string, number[]> = {
   "image/jpeg": [0xff, 0xd8, 0xff],
   "image/png": [0x89, 0x50, 0x4e, 0x47],
-  "image/webp": [0x52, 0x49, 0x46, 0x46], // "RIFF" : suffisant pour rejeter les faux positifs grossiers.
+  "image/webp": [0x52, 0x49, 0x46, 0x46], // En-tête RIFF
 };
 
 async function verifierRoleEmployeOuAdmin() {
@@ -38,12 +38,7 @@ function signatureValide(bytes: Uint8Array, mime: string) {
   return signature.every((octet, index) => bytes[index] === octet);
 }
 
-/**
- * Upload d'une image de menu dans Supabase Storage (bucket public "menu-images").
- * Defense en profondeur : role verifie cote serveur (en plus de la policy Storage),
- * type MIME et signature binaire reelle verifies (pas seulement le Content-Type client,
- * falsifiable), taille plafonnee, nom de fichier genere en UUID (jamais le nom original).
- */
+// Upload d'image dans le bucket Supabase Storage (vérif rôle, taille, type binaire + nom UUID)
 export async function uploaderImageMenu(
   formData: FormData
 ): Promise<{ success: true; url: string } | { success: false; error: string }> {
@@ -85,11 +80,7 @@ export async function uploaderImageMenu(
   return { success: true, url: data.publicUrl };
 }
 
-/**
- * Supprime une image du bucket Storage (nettoyage d'espace disque quand une image
- * est retiree du formulaire). Les URLs historiques hors de notre bucket (seed, externes)
- * sont ignorees sans erreur.
- */
+// Supprime un fichier du bucket Supabase Storage s'il en fait partie
 export async function supprimerImageMenu(
   url: string
 ): Promise<{ success: true } | { success: false; error: string }> {

@@ -8,16 +8,7 @@ import { validerCreationEmploye } from "../validations/admin";
 
 export type AdminActionResult = { success: true } | { success: false; error: string };
 
-/**
- * CDC page 9 : "il peut creer un compte de type employe, il doit pour cela,
- * fournir un email qui sera l'username ainsi qu'un mot de passe. L'employe
- * en question va recevoir un mail lui notifiant qu'un compte, pour lui, a
- * ete cree, cependant, le mot de passe n'est pas communique dans le mail."
- *
- * Le mail de bienvenue existant (migration 004, trigger sur public.profils)
- * se declenche automatiquement des la creation du profil et ne contient
- * jamais le mot de passe : il est reutilise tel quel, sans nouveau trigger.
- */
+// Création d'un compte employé (l'email de notification est envoyé sans exposer le mot de passe)
 export async function creerCompteEmploye(
   email: string,
   motDePasse: string,
@@ -43,10 +34,7 @@ export async function creerCompteEmploye(
     return { success: false, error: error?.message ?? "Erreur lors de la création du compte." };
   }
 
-  // Le trigger handle_new_user cree le profil avec le role "utilisateur" par
-  // defaut (RG1). On le fait passer a "employe" via la fonction RPC dediee,
-  // jamais par une mise a jour directe : la session utilisee ici est celle
-  // de l'admin authentifie, verifiee a nouveau a l'interieur de la fonction.
+  // Attribution du rôle 'employe' via la fonction RPC dédiée (check des droits côté DB)
   const supabase = await createClient();
   const { error: erreurRole } = await supabase.rpc("admin_activer_role_employe", {
     p_user_id: data.user.id,
@@ -60,10 +48,7 @@ export async function creerCompteEmploye(
   return { success: true };
 }
 
-/**
- * CDC page 9 : "il doit etre possible egalement de rendre inutilisable un
- * compte employe en cas de depart de l'entreprise par exemple."
- */
+// Activer ou désactiver un compte employé (ex: en cas de départ)
 export async function definirStatutCompteEmploye(
   employeId: string,
   actif: boolean,

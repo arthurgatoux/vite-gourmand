@@ -54,10 +54,7 @@ type CommandeUtilisateurRow = {
   menus: { titre: string; theme: string | null }
 }
 
-/**
- * Récupère l'historique des commandes du profil connecté.
- * Utilise la policy RLS `utilisateur_lit_ses_commandes` (security_invoker).
- */
+// Historique des commandes de l'utilisateur connecté
 export async function getCommandesUtilisateur(userId: string): Promise<CommandeHistorique[]> {
   const supabase = await createClient()
   const { data, error } = await supabase
@@ -118,11 +115,7 @@ type CommandeDetailRow = {
   menus: { titre: string; theme: string | null; prix_base: number; nb_personnes_min: number }
 }
 
-/**
- * Récupère le détail complet d'une commande avec son historique de statuts et l'avis
- * eventuellement déposé. Vérifie que la commande appartient bien au userId (RLS +
- * vérification applicative).
- */
+// Détail complet d'une commande (jointures avec l'historique et l'avis)
 export async function getCommandeDetail(
   commandeId: string,
   userId: string

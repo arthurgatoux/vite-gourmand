@@ -1,10 +1,5 @@
-// Vite Gourmand - Initialisation MongoDB Atlas
-// Base : vite_gourmand_stats | Collection : stats_menus
-// Reproduit ici pour reference : execute manuellement via l'UI Atlas (Data Explorer)
-// le 12/09/2026, car le connecteur MongoDB Pipedream presente un bug de resolution
-// DNS SRV sur le hostname de ce cluster (cf. docs/RGPD-ViteGourmand.md notes techniques).
-//
-// Schema detaille, index et strategie de synchronisation : voir docs/NoSQL-MongoDB-ViteGourmand.md
+// Script d'initialisation de la base NoSQL MongoDB Atlas (collection stats_menus)
+// Définit le schéma de validation et crée les index d'agrégation
 
 use vite_gourmand_stats;
 

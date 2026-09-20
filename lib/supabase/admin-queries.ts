@@ -9,11 +9,7 @@ export interface CompteEmploye {
   dateCreation: string;
 }
 
-/**
- * Liste des comptes employe pour l'espace administrateur.
- * Protegee par la policy RLS employe_admin_lisent_tous_profils (clause
- * est_employe_ou_admin), deja en place depuis la migration 003.
- */
+// Récupère la liste des employés pour la gestion d'équipe côté admin
 export async function listerComptesEmployes(): Promise<CompteEmploye[]> {
   const supabase = await createClient();
   const { data, error } = await supabase

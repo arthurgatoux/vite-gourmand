@@ -7,12 +7,7 @@ interface GalerieImagesProps {
   titre: string;
 }
 
-/**
- * Galerie interactive de la vue detaillee d'un menu.
- * La premiere image (images[0]) est l'image mise en avant, affichee par defaut.
- * Les miniatures en dessous sont cliquables (et activables au clavier via de vrais
- * <button>) pour afficher l'image correspondante en grand.
- */
+// Galerie photo interactive (la première image est sélectionnée par défaut)
 export function GalerieImages({ images, titre }: GalerieImagesProps) {
   const [indexActif, setIndexActif] = useState(0);
 

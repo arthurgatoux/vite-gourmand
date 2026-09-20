@@ -71,8 +71,7 @@ export function MenuForm({ menu, plats, regimes }: MenuFormProps) {
 
   function retirerImage(index: number) {
     const url = images[index];
-    setImages((prev) => prev.filter((_, i) => i !== index));
-    // Nettoyage best-effort du bucket : ne bloque jamais l'edition du formulaire.
+    // Suppression asynchrone dans Supabase Storage (ne bloque pas le formulaire)
     void supprimerImageMenu(url);
   }
 

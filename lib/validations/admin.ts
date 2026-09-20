@@ -1,8 +1,6 @@
 export type ChampCreationEmploye = "email" | "motDePasse";
 
-// Meme regle que l'inscription visiteur (CDC page 5) : 10 caracteres
-// minimum, au moins une majuscule, une minuscule, un chiffre, un caractere
-// special.
+// Règle de mot de passe fort : min 10 caractères, 1 maj, 1 min, 1 chiffre, 1 spécial
 const REGEX_MOT_DE_PASSE = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{10,}$/;
 const REGEX_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 

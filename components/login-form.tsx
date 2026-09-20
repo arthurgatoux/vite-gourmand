@@ -40,17 +40,13 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
       const { error } = await supabase.auth.signInWithPassword({ email, password: motDePasse });
       if (error) throw error;
 
-      // Respecte la destination d'origine (ex: /commande?menu=...) quand un
-      // visiteur non authentifie tentait de commander, sinon retour a
-      // l'accueil. Seules les URLs internes commencant par "/" sont suivies,
-      // pour eviter une redirection ouverte vers un site externe.
+      // Redirection vers l'URL d'origine (ex: /commande) si c'est un chemin relatif valide, sinon retour accueil
       const destination = searchParams.get("redirect");
       const cible = destination && destination.startsWith("/") ? destination : "/";
       router.push(cible);
       router.refresh();
     } catch {
-      // Message volontairement generique : ne jamais reveler si l'email
-      // existe ou non (bonne pratique de securite, enumeration de comptes).
+      // Erreur générique côté UI pour la sécurité (évite l'énumération d'emails)
       setErreurGlobale("Email ou mot de passe incorrect.");
     } finally {
       setIsLoading(false);

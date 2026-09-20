@@ -9,15 +9,8 @@ interface DashboardStatsProps {
   stats: StatMenu[];
 }
 
-/**
- * CDC page 9 : comparatif du nombre de commandes par menu (graphique) et
- * calcul du chiffre d'affaires filtrable par menu et par duree.
- *
- * Le jeu de donnees est un document agrege par menu (pas d'evenements bruts,
- * cf. docs/NoSQL-MongoDB-ViteGourmand.md section 1) : il tient entierement
- * en memoire cote client, donc les deux filtres sont calcules localement,
- * sans aller-retour serveur supplementaire.
- */
+// Visualisation des stats (données agrégées venant de MongoDB)
+// Le filtrage par date/menu se fait côté client pour éviter des re-fetch inutiles.
 export function DashboardStats({ stats }: DashboardStatsProps) {
   const [menuFiltre, setMenuFiltre] = useState<string>("tous");
   const [moisDebut, setMoisDebut] = useState("");
@@ -30,6 +23,7 @@ export function DashboardStats({ stats }: DashboardStatsProps) {
     [stats, menuFiltre],
   );
 
+  // Calcul du CA et du volume de commandes selon le filtre de dates
   const { caPeriode, nbCommandesPeriode } = useMemo(() => {
     let ca = 0;
     let nb = 0;

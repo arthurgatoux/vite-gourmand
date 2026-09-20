@@ -43,10 +43,7 @@ type CommandeEmployeRow = {
   }[]
 }
 
-/**
- * Recupere toutes les commandes (tous clients) pour l'espace employe/admin.
- * Protege par la policy RLS `utilisateur_lit_ses_commandes` (clause est_employe_ou_admin()).
- */
+// Charge toutes les commandes clients pour la gestion de l'espace employé
 export async function getCommandesEmploye(): Promise<CommandeEmploye[]> {
   const supabase = await createClient()
   const { data, error } = await supabase
@@ -129,10 +126,7 @@ type AvisEnAttenteRow = {
   }
 }
 
-/**
- * Recupere les avis en attente de moderation pour l'espace employe/admin.
- * Protege par la policy RLS `employe_admin_lisent_tous_avis` (clause est_employe_ou_admin()).
- */
+// Récupère les avis en attente d'approbation
 export async function getAvisEnAttente(): Promise<AvisEmploye[]> {
   const supabase = await createClient()
   const { data, error } = await supabase

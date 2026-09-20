@@ -31,6 +31,7 @@ export function CommandeForm({ menu, profil }: CommandeFormProps) {
   const [erreurGlobale, setErreurGlobale] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
+  // Recalcul en direct de l'aperçu du tarif pour l'utilisateur (réduction + frais de port)
   const apercu = useMemo(
     () => calculerApercuPrix(menu.prixBase, nbPersonnes, menu.nbPersonnesMin, estABordeaux, distanceKm),
     [menu.prixBase, menu.nbPersonnesMin, nbPersonnes, estABordeaux, distanceKm],
@@ -56,10 +57,7 @@ export function CommandeForm({ menu, profil }: CommandeFormProps) {
 
     setIsLoading(true);
     try {
-      // Deplace vers une Server Action (lib/supabase/commande-actions.ts) : le
-      // prix definitif reste recalcule cote serveur par le trigger Postgres
-      // calculer_prix_commande, et le delai minimum de commande du menu (CDC
-      // page 4) est desormais verifie avant l'insertion.
+      // Envoi de la commande via Server Action (la validation finale du prix et du délai se fait en BD via trigger)
       const resultat = await creerCommande(menu.id, {
         ...donnees,
         nomClient,

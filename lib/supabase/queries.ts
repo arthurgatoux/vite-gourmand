@@ -9,12 +9,7 @@ export type AvisPublic = {
   auteur_initiale_nom: string | null;
 };
 
-/**
- * Recupere les avis clients valides (RG6) via la vue avis_publics.
- * La vue minimise les donnees exposees de public.profils (RGPD) :
- * seuls le prenom et l'initiale du nom sont accessibles publiquement,
- * jamais l'email, le telephone ou l'adresse postale.
- */
+// Récupère les avis validés pour l'accueil (prenom + initiale nom via la vue avis_publics)
 export async function getAvisPublics(limit = 6): Promise<AvisPublic[]> {
   const supabase = await createClient();
   const { data, error } = await supabase

@@ -1,13 +1,6 @@
 import { MongoClient } from "mongodb";
 
-/**
- * Client MongoDB Atlas, singleton reutilise entre les invocations serveur
- * (Server Actions / Route Handlers). Cluster vite-gourmand, base
- * vite_gourmand_stats, cf. docs/NoSQL-MongoDB-ViteGourmand.md.
- *
- * En developpement, le client est mis en cache sur `globalThis` pour
- * survivre au hot-reload de Next.js sans multiplier les connexions.
- */
+// Singleton MongoDB Atlas (reconnexion automatique / cache sur globalThis en dev pour le HMR Next.js)
 const uri = process.env.MONGODB_URI!;
 
 const globalForMongo = globalThis as unknown as {

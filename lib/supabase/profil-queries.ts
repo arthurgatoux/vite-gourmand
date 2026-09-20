@@ -9,10 +9,7 @@ export interface ProfilComplet {
   adressePostale: string | null
 }
 
-/**
- * Recupere le profil complet (informations personnelles modifiables) de
- * l'utilisateur connecte. Protege par la policy RLS `utilisateur_lit_son_profil`.
- */
+// Récupère les informations personnelles du profil connecté
 export async function getProfilComplet(userId: string): Promise<ProfilComplet | null> {
   const supabase = await createClient()
   const { data, error } = await supabase

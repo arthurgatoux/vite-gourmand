@@ -14,13 +14,7 @@ export interface DonneesCommande {
   distanceKm: number;
 }
 
-/**
- * Validation du formulaire de commande.
- * CDC : "il y a l'obligation de commander pour le nombre minimum de personne
- * inscrit dans le menu." Le controle definitif est refait cote serveur
- * (trigger calculer_prix_commande) : cette validation est une aide UX, pas
- * la source de verite.
- */
+// Validation front-end de la commande (adresse, date future, nb minimum de personnes)
 export function validerCommande(
   donnees: DonneesCommande,
   nbPersonnesMin: number
@@ -52,11 +46,7 @@ export function validerCommande(
   return erreurs;
 }
 
-/**
- * Reproduit cote client le calcul serveur (RG2 reduction, RG3 livraison)
- * uniquement pour l'apercu avant validation exige par le CDC. Le montant qui
- * fait foi est toujours celui recalcule par le trigger Supabase.
- */
+// Calcul d'estimation du prix côté UI (reproduit la règle métier : -10% dès min+5 pers, frais de port)
 export function calculerApercuPrix(
   prixBase: number,
   nbPersonnes: number,

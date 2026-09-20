@@ -16,7 +16,7 @@ const ThemeSwitcher = () => {
   const [mounted, setMounted] = useState(false);
   const { theme, setTheme } = useTheme();
 
-  // useEffect only runs on the client, so now we can safely show the UI
+  // Évite le mismatch d'hydratation Next.js / next-themes
   useEffect(() => {
     setMounted(true);
   }, []);

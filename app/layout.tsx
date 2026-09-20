@@ -15,6 +15,13 @@ export const metadata: Metadata = {
   title: "Vite & Gourmand — Traiteur événementiel à Bordeaux",
   description:
     "Vite & Gourmand, traiteur événementiel bordelais depuis 25 ans : découvrez nos menus et commandez en ligne.",
+  icons: {
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/icon.png", type: "image/png" },
+    ],
+    apple: "/apple-icon.png",
+  },
 };
 
 const inter = Inter({
